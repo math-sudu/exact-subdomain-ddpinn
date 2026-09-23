@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+figures/
+results/recomputed/
+results/continuation/
+results/unloading/fields.npz
+results/unloading/wall_profiles.csv

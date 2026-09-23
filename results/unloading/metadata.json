@@ -1,0 +1,70 @@
+{
+  "source_run": "results/model",
+  "checkpoint": "results/model/model.pt",
+  "load_steps": 12,
+  "radius_gamma_over_a": 3,
+  "material": {
+    "Eh_GPa": 27.5625,
+    "Ev_GPa": 10.5,
+    "Gvh_GPa": 4.2,
+    "nu_vh": 0.2,
+    "nu_hh": 0.25,
+    "bedding_dip_deg": 45.0
+  },
+  "physics": {
+    "matrix_cohesion_mpa": 2,
+    "matrix_phi_deg": 32.5,
+    "matrix_psi_deg": 2.5,
+    "joint_cohesion_mpa": 0.2,
+    "joint_phi_deg": 25,
+    "joint_psi_deg": 0,
+    "joint_normal_deg": 0,
+    "matrix_smoothing_mpa": 0.01,
+    "joint_smoothing_mpa": 0.01,
+    "complementarity_smoothing": 1e-08
+  },
+  "scales": {
+    "tunnel_radius_m": 1.0,
+    "stress_MPa": 2.0,
+    "modulus_GPa": 10.5,
+    "displacement_mm": 0.1904761904761905
+  },
+  "insitu_stress_MPa": [
+    -1.0,
+    -2.0,
+    -1.1625000000000003,
+    0.0
+  ],
+  "grid": {
+    "radial_cells": 128,
+    "angular_cells": 720,
+    "radial_rule": "quadratic edges; midpoints in squared radius",
+    "wall_angle_spacing_deg": 0.5,
+    "footprint_level": 1e-05
+  },
+  "storage": "fields.npz uses float32 for plotting; all evaluations and CSV summaries use float64",
+  "definitions": {
+    "accumulated_equivalent": "sum_k sqrt(2/3 dev(delta epsilon_p_k):dev(delta epsilon_p_k))",
+    "plastic_strain": "sum_k [gamma_m grad(g_m) + gamma_j grad(g_j)]; engineering xy shear",
+    "signed_slip_strain": "sum_k 2 t.delta epsilon_p_joint_k.n",
+    "accumulated_slip_strain": "sum_k abs(2 t.delta epsilon_p_joint_k.n)",
+    "footprint": "area where accumulated equivalent plastic strain >= 10 microstrain; display contour only",
+    "units": "displacements in mm; strains dimensionless; coordinates divided by tunnel radius"
+  },
+  "fixed_locations": {
+    "final_maximum_closure": {
+      "angle_deg": 107.0,
+      "xy_over_a": [
+        -0.29237170472273666,
+        0.9563047559630355
+      ]
+    },
+    "final_maximum_slip": {
+      "angle_deg": 338.0,
+      "xy_over_a": [
+        0.9271838545667873,
+        -0.37460659341591235
+      ]
+    }
+  }
+}
