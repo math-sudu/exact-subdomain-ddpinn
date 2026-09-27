@@ -45,7 +45,7 @@ def test_material_residual_matches_existing_norm_and_gradient():
 
 def test_causal_dual_objective_keeps_other_terms_and_prefix():
     root = Path(__file__).resolve().parents[1]
-    spec = json.loads((root/'configs/unloading.json').read_text())
+    spec = json.loads((root/'configs/initialization.json').read_text())
     spec.pop('composite_area_quadrature', None)
     spec.update(hidden=[6, 6], n_pde=16, boundary=16,
                 assessment_n_pde=16, assessment_boundary=16,

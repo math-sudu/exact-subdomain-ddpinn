@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 import figure_style as fs
 
 ROOT = Path(__file__).resolve().parents[1]
+FIGURES = ROOT / "figures"
 
 
 def axes_mm(fig, rect):
@@ -18,8 +19,8 @@ def axes_mm(fig, rect):
 
 
 def export(fig, name, size, thesis, sources, source, **bindings):
-    output = ROOT / "figures"
-    output.mkdir(exist_ok=True)
+    output = FIGURES
+    output.mkdir(parents=True, exist_ok=True)
     for extension in ("pdf", "svg"):
         fig.savefig(output / f"{name}.{extension}", bbox_inches=None,
                     facecolor="white", transparent=False)

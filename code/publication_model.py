@@ -4,7 +4,7 @@ import csv
 
 import torch
 
-from pilot.causal_mixed import CausalMixedPINN
+from pilot.spectral_mixed import make_causal_model, freeze_history
 from pilot.plasticity import WeakPlaneParameters
 
 
@@ -12,12 +12,11 @@ def load_model(run, checkpoint=None, device="cpu"):
     saved = torch.load(checkpoint or run / "model.pt", map_location="cpu", weights_only=True)
     spec = saved["spec"]
     with torch.random.fork_rng(devices=[]):
-        model = CausalMixedPINN(spec["hidden"], spec["input_scale"],
-                               spec["load_steps"], saved["c"]).to(saved["c"])
+        model = make_causal_model(dict(spec, radius=spec["input_scale"]), saved["c"])
         for _ in range(saved["load_step"]):
             model.append_increment(copy_previous=False)
     model.load_state_dict(saved["model"], strict=True)
-    model.to(device).eval().requires_grad_(False)
+    freeze_history(model.to(device).eval())
     bundle = dict(spec=spec, c=saved["c"], s0=saved["s0"],
                   params=WeakPlaneParameters(**spec["physics"]))
     return bundle, saved, model

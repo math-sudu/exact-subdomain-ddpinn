@@ -5,5 +5,8 @@ __pycache__/
 figures/
 results/recomputed/
 results/continuation/
-results/unloading/fields.npz
+results/recomputed_interface/
+results/recomputed_orientation/
+results/**/fields.npz
 results/unloading/wall_profiles.csv
+results/unloading/radial_kinematics.npz

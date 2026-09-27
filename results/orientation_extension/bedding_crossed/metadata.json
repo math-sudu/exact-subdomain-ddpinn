@@ -1,0 +1,122 @@
+{
+  "case": {
+    "name": "bedding_crossed",
+    "eh_over_ev": 2.625,
+    "bedding_dip_deg": 45.0,
+    "opening_axes": [
+      1.0,
+      1.0
+    ],
+    "opening_angle_deg": 0.0,
+    "joint_normal_deg": 45.0
+  },
+  "settings": {
+    "question": "How do aligned and crossed elastic bedding and weak-plane directions change local sliding and regional convergence during the same unloading path?",
+    "initialization_run": "results/initialization",
+    "hidden": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "radius": 3.0,
+    "load_steps": 12,
+    "representation": "spectral",
+    "projection": {
+      "radial_order": 32,
+      "angular_modes": 64,
+      "angular_samples": 256
+    },
+    "reuse_inactive_elastic_prefix": true,
+    "plastic_initialization": "corresponding_original_increment",
+    "quadrature": {
+      "radial": 48,
+      "angular": 256,
+      "boundary": 1024,
+      "stagger_angles": true,
+      "radial_power": 1
+    },
+    "weights": {
+      "equilibrium": 3.285697128825039,
+      "wall": 3.0928172158086884,
+      "interface": 5.076251850402668,
+      "constitutive": 5.703692056986043,
+      "complementarity": 100.0,
+      "gauge": 1.0
+    },
+    "interface_metric": "compliance",
+    "interface_normalization": "Original exterior compliance norm, including 4*pi*R^2; used throughout all twelve increments.",
+    "lbfgs_evaluations_per_step": 4000,
+    "physics": {
+      "matrix_cohesion_mpa": 2.0,
+      "matrix_phi_deg": 32.5,
+      "matrix_psi_deg": 2.5,
+      "joint_cohesion_mpa": 0.2,
+      "joint_phi_deg": 25.0,
+      "joint_psi_deg": 0.0,
+      "matrix_smoothing_mpa": 0.01,
+      "joint_smoothing_mpa": 0.01,
+      "complementarity_smoothing": 1e-08
+    },
+    "cases": [
+      {
+        "name": "bedding_oblique",
+        "eh_over_ev": 2.625,
+        "bedding_dip_deg": 45.0,
+        "opening_axes": [
+          1.0,
+          1.0
+        ],
+        "opening_angle_deg": 0.0,
+        "joint_normal_deg": 0.0
+      },
+      {
+        "name": "bedding_aligned",
+        "eh_over_ev": 2.625,
+        "bedding_dip_deg": 45.0,
+        "opening_axes": [
+          1.0,
+          1.0
+        ],
+        "opening_angle_deg": 0.0,
+        "joint_normal_deg": 135.0
+      },
+      {
+        "name": "bedding_crossed",
+        "eh_over_ev": 2.625,
+        "bedding_dip_deg": 45.0,
+        "opening_axes": [
+          1.0,
+          1.0
+        ],
+        "opening_angle_deg": 0.0,
+        "joint_normal_deg": 45.0
+      }
+    ]
+  },
+  "fixed_locations": {
+    "maximum_convergence": {
+      "angle_deg": 280.0,
+      "xy_over_a": [
+        0.17364817766692997,
+        -0.9848077530122081
+      ]
+    },
+    "maximum_slip": {
+      "angle_deg": 23.5,
+      "xy_over_a": [
+        0.917060074385124,
+        0.3987490689252462
+      ]
+    }
+  },
+  "initialization": "Reuse the common elastic prefix while both yield functions remain nonpositive on the independent evaluation points, with zero plastic outputs. Plastic initialization: corresponding_original_increment. Retrain with the current weak-plane orientation.",
+  "displacement_mm_scale": 0.1904761904761905,
+  "strain_scale": 0.00019047619047619048,
+  "insitu_stress_mpa": [
+    -1.0,
+    -2.0,
+    -1.1625000000000003,
+    0.0
+  ]
+}

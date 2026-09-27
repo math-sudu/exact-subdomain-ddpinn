@@ -35,6 +35,11 @@ class IncrementFields(nn.Module):
         stress = self.stress_head(self.stress_trunk(xy/self.input_scale))/self.total_steps
         return kin[..., :2], stress, kin[..., 2:]*self.multiplier_scale
 
+    def spatial_fields(self, xy):
+        directions = torch.stack((P._spatial_direction(xy, 0), P._spatial_direction(xy, 1)))
+        values, derivatives = torch.vmap(lambda d: torch.func.jvp(self, (xy,), (d,)))(directions)
+        return tuple(value[0] for value in values), derivatives
+
 
 class CausalMixedPINN(nn.Module):
     def __init__(self, hidden, input_scale, total_steps, stiffness):
@@ -47,14 +52,17 @@ class CausalMixedPINN(nn.Module):
     def n_steps(self):
         return len(self.increments)
 
+    def make_increment(self):
+        return IncrementFields(self.hidden, self.input_scale, self.total_steps,
+                               self.multiplier_scale).to(self.multiplier_scale)
+
     def append_increment(self, *, copy_previous=True):
         for increment in self.increments:
             increment.requires_grad_(False)
         if copy_previous and self.increments:
             current = deepcopy(self.increments[-1]).requires_grad_(True)
         else:
-            current = IncrementFields(self.hidden, self.input_scale, self.total_steps,
-                                      self.multiplier_scale).to(self.multiplier_scale)
+            current = self.make_increment()
         self.increments.append(current)
         return current
 
@@ -84,9 +92,11 @@ def current_residuals(increment, cache, pts, stiffness, insitu, sf, params, step
         raise ValueError('Prefix cache belongs to different coordinates; recompute history.')
     if not 1 <= step <= increment.total_steps:
         raise ValueError('Invalid physical loading step')
-    directions = torch.stack((P._spatial_direction(xy,0),P._spatial_direction(xy,1)))
-    values, derivatives = torch.vmap(lambda d: torch.func.jvp(increment,(xy,),(d,)))(directions)
-    du, ds, gamma = (value[0] for value in values)
+    if isinstance(increment, IncrementFields):
+        (du, ds, gamma), derivatives = increment.spatial_fields(xy)
+    else:
+        # Functional parameter probes expose a callable rather than a module.
+        (du, ds, gamma), derivatives = IncrementFields.spatial_fields(increment, xy)
     ddu, dds, _ = derivatives
     de = torch.stack((ddu[0,...,0],ddu[1,...,1],torch.zeros_like(ddu[0,...,0]),
                       ddu[1,...,0]+ddu[0,...,1]),-1)

@@ -14,6 +14,7 @@ import torch
 
 from publication_model import load_model, write_rows
 from pilot import config as C, plasticity as P
+from pilot.spectral_mixed import load_orientation_model
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN = ROOT / 'results/model'
@@ -96,16 +97,22 @@ def stress_path_rows(bundle, model, locations):
     return rows
 
 
-def export(run, checkpoint, output, device, stress_paths_only=False):
+def export(run, checkpoint, output, device, stress_paths_only=False, orientation=False):
     torch.set_num_threads(1)
-    bundle, saved, model = load_model(run, checkpoint, device)
+    if orientation:
+        bundle, saved, model = load_orientation_model(checkpoint, device)
+        if saved["completed_steps"] != saved["settings"]["load_steps"]:
+            raise ValueError("Finish the orientation history before extracting its figures.")
+    else:
+        bundle, saved, model = load_model(run, checkpoint, device)
     if model.n_steps != 12:
         raise ValueError('The unloading extraction requires all twelve saved increments.')
     output.mkdir(parents=True, exist_ok=True)
     if stress_paths_only:
         metadata = json.loads((output/'metadata.json').read_text(encoding='utf-8'))
         if ((ROOT/metadata['source_run']).resolve() != run
-                or (ROOT/metadata['checkpoint']).resolve() != checkpoint):
+                or (ROOT/metadata['checkpoint']).resolve() != checkpoint
+                or ('algorithm_state' in saved and saved['algorithm_state']['event'] != metadata['event'])):
             raise ValueError('The stress paths must use the checkpoint of the existing field export.')
         write_rows(output/'fixed_location_stress_paths.csv',
                    stress_path_rows(bundle, model, metadata['fixed_locations']))
@@ -174,9 +181,17 @@ def export(run, checkpoint, output, device, stress_paths_only=False):
     material = C.material()
     # The saved stiffness is the source; this equality identifies its engineering constants.
     np.testing.assert_allclose(bundle['c'].numpy(), material.plane_strain_stiffness4()/C.E_REF)
+    provenance = dict(representation=bundle['spec'].get('representation', 'pointwise'))
+    if orientation:
+        provenance.update(completed_steps=saved['completed_steps'],
+                          projection=bundle['spec'].get('projection'))
+    elif 'algorithm_state' in saved:
+        provenance.update(accepted=saved['algorithm_state']['accepted'],
+                          event=saved['algorithm_state']['event'])
     metadata = dict(
         source_run=run.relative_to(ROOT).as_posix(),
         checkpoint=checkpoint.relative_to(ROOT).as_posix(),
+        **provenance,
         load_steps=model.n_steps, radius_gamma_over_a=radius_gamma,
         material=dict(Eh_GPa=material.Eh/1e9, Ev_GPa=material.Ev/1e9,
                       Gvh_GPa=material.Gvh/1e9, nu_vh=material.nu_vh,
@@ -212,8 +227,10 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint', type=Path)
     parser.add_argument('--output', type=Path, default=OUTPUT)
     parser.add_argument('--device', default='cpu')
+    parser.add_argument('--orientation', action='store_true',
+                        help='Read a completed run_orientation_extension checkpoint.')
     parser.add_argument('--stress-paths-only', action='store_true',
                         help='Query the existing fixed locations without regenerating the field grid.')
     args = parser.parse_args()
     export(args.run.resolve(), (args.checkpoint or args.run/'model.pt').resolve(),
-           args.output.resolve(), args.device, args.stress_paths_only)
+           args.output.resolve(), args.device, args.stress_paths_only, args.orientation)

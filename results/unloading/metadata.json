@@ -1,8 +1,15 @@
 {
   "source_run": "results/model",
   "checkpoint": "results/model/model.pt",
+  "representation": "spectral",
+  "completed_steps": 12,
+  "projection": {
+    "radial_order": 32,
+    "angular_modes": 64,
+    "angular_samples": 256
+  },
   "load_steps": 12,
-  "radius_gamma_over_a": 3,
+  "radius_gamma_over_a": 3.0,
   "material": {
     "Eh_GPa": 27.5625,
     "Ev_GPa": 10.5,
@@ -12,16 +19,16 @@
     "bedding_dip_deg": 45.0
   },
   "physics": {
-    "matrix_cohesion_mpa": 2,
+    "matrix_cohesion_mpa": 2.0,
     "matrix_phi_deg": 32.5,
     "matrix_psi_deg": 2.5,
     "joint_cohesion_mpa": 0.2,
-    "joint_phi_deg": 25,
-    "joint_psi_deg": 0,
-    "joint_normal_deg": 0,
+    "joint_phi_deg": 25.0,
+    "joint_psi_deg": 0.0,
     "matrix_smoothing_mpa": 0.01,
     "joint_smoothing_mpa": 0.01,
-    "complementarity_smoothing": 1e-08
+    "complementarity_smoothing": 1e-08,
+    "joint_normal_deg": 0.0
   },
   "scales": {
     "tunnel_radius_m": 1.0,
@@ -53,18 +60,38 @@
   },
   "fixed_locations": {
     "final_maximum_closure": {
-      "angle_deg": 107.0,
+      "angle_deg": 284.5,
       "xy_over_a": [
-        -0.29237170472273666,
-        0.9563047559630355
+        0.25038000405444144,
+        -0.9681476403781077
       ]
     },
     "final_maximum_slip": {
-      "angle_deg": 338.0,
+      "angle_deg": 203.0,
       "xy_over_a": [
-        0.9271838545667873,
-        -0.37460659341591235
+        -0.9205048534524404,
+        -0.39073112848927355
       ]
     }
+  },
+  "radial_kinematics": {
+    "source": "code/extract_radial_kinematics.py",
+    "arrays": "results/unloading/radial_kinematics.npz",
+    "fixed_contributions": "results/unloading/radial_contributions.csv",
+    "location_order": [
+      "A",
+      "B"
+    ],
+    "radial_samples": 257,
+    "angle_spacing_deg": 0.5,
+    "strain_definition": "Full strain of the excavation displacement: d(u_r)/d(r), from spatial AD.",
+    "annulus_integral": "Full angular profiles use u_r(R_Gamma)-u_r(a); A/B use 32 quadratic radial panels with 32 Gauss points each.",
+    "cumulative_integral": "From the wall to radius r: u_r(r)-u_r(a), in mm.",
+    "contribution_order": [
+      "wall convergence",
+      "interface motion",
+      "annulus radial-strain integral"
+    ],
+    "units": "Displacement and integrated contributions: mm. Strain: dimensionless. Coordinates: r/a."
   }
 }

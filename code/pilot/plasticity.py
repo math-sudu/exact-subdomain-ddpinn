@@ -175,3 +175,27 @@ def _traction4(stress: torch.Tensor, normal: torch.Tensor) -> torch.Tensor:
     tx = stress[..., 0] * normal[..., 0] + stress[..., 3] * normal[..., 1]
     ty = stress[..., 3] * normal[..., 0] + stress[..., 1] * normal[..., 1]
     return torch.stack((tx, ty), dim=-1)
+
+
+def _exterior_field_from_trace(
+    displacement: np.ndarray,
+    mat,
+    radius: float,
+    m_max: int | None,
+):
+    from sf_core.exterior_field import ExteriorField
+
+    n = displacement.shape[1]
+    coefficients = np.fft.rfft(displacement, axis=1) / n
+    last = min(coefficients.shape[1] - 1,
+               m_max if m_max is not None else coefficients.shape[1] - 1)
+    potential = np.zeros((2, last), dtype=complex)
+    material_map = np.array(
+        [[mat.p1, mat.p2], [mat.q1, mat.q2]], dtype=complex
+    )
+    inverse_map = np.linalg.inv(material_map)
+    for harmonic in range(1, last + 1):
+        potential[:, harmonic - 1] = inverse_map @ np.conj(
+            coefficients[:, harmonic]
+        )
+    return ExteriorField(mat, radius, (potential[0], potential[1]))
