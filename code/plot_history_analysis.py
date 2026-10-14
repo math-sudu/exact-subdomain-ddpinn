@@ -6,6 +6,7 @@ from pathlib import Path
 
 import numpy as np
 from matplotlib.colors import Normalize, SymLogNorm
+from matplotlib.patches import ConnectionPatch
 
 import figure_artwork as art
 import plot_unloading_results as unloading
@@ -183,16 +184,16 @@ def orientation_gauges():
             ax = field(fig, (x+3, 137, 38, 38), grid, values*100,
                        SymLogNorm(.001, vmin=0, vmax=.35), f"({chr(97+i)}) {label}",
                        r"$s_j^p$ (%)", [0, .001, .01, .35])
+            full_mesh = ax.collections[0]
             for direction, color, style in ((45, fs.BLACK, "-"), ((90, 225, 135)[i], fs.RED, "--")):
                 vector = .8*np.array([np.cos(np.deg2rad(direction)), np.sin(np.deg2rad(direction))])
                 ax.plot([-vector[0], vector[0]], [-vector[1], vector[1]], color=color, linestyle=style, linewidth=1)
-            beta = (0, 135, 45)[i]
-            for direction in (beta, beta+90, beta+180, beta+270):
+            for direction in (45, 135, 225, 315):
                 vector = np.array([np.cos(np.deg2rad(direction)), np.sin(np.deg2rad(direction))])
                 ax.plot([vector[0], 3*vector[0]], [vector[1], 3*vector[1]], color=".5", linestyle=":", linewidth=.65)
-            for direction, sign in ((beta+45, "+"), (beta+135, "−")):
-                point = 2.25*np.array([np.cos(np.deg2rad(direction)), np.sin(np.deg2rad(direction))])
-                ax.text(*point, sign, ha="center", va="center", fontsize=10,
+            for point, region, color in (((2.25, 0), r"$\Omega_{\mathrm{S}}$", fs.RED),
+                                          ((0, -2.25), r"$\Omega_{\mathrm{T}}$", fs.BLUE)):
+                ax.text(*point, region, ha="center", va="center", fontsize=8, color=color,
                         bbox=dict(fc="white", ec="none", pad=.1))
         ax = axis(fig, (x, 78, 44, 36), f"({chr(100+i)}) Diametric shortening",
                   r"Gauge angle $\theta$ (deg)", r"$D$ (mm)" if i == 0 else "")
@@ -209,9 +210,9 @@ def orientation_gauges():
         ax = axis(fig, (x, 17, 44, 36), f"({chr(103+i)}) Vertical plastic sources",
                   r"Release fraction $\lambda$", r"$D^p_{90}$ (mm)" if i == 0 else "")
         release = np.r_[0, source["steps"]/12]
-        for j, color, style, region in ((0, fs.RED, "-", r"$\Omega_+$"),
-                                       (1, fs.BLUE, "--", r"$\Omega_-$")):
-            ax.plot(release, np.r_[0, source["region_source_total_mm"][1, :, j]],
+        for j, color, style, region in ((0, fs.RED, "-", r"$\Omega_{\mathrm{S}}$: sides"),
+                                       (1, fs.BLUE, "--", r"$\Omega_{\mathrm{T}}$: top/bottom")):
+            ax.plot(release, np.r_[0, source["common_region_source_total_mm"][1, :, j]],
                     color=color, linestyle=style, linewidth=1, label=region)
         ax.plot(release, np.r_[0, source["source_total_mm"][1]], color=fs.BLACK,
                 linestyle=":", linewidth=1, label="Sum")
@@ -220,8 +221,33 @@ def orientation_gauges():
                 markerfacecolor="white", label=r"$D_{90}-D^{el}_{90}$")
         ax.set(xlim=(0, 1.02), ylim=(-.004, .13), xticks=[0, .5, 1])
         if i == 0:
-            ax.legend(fontsize=7, frameon=False, loc="upper left", handlelength=1.4,
-                      labelspacing=.15, borderpad=.1)
+            fig.legend(*ax.get_legend_handles_labels(), fontsize=7.5, frameon=False,
+                       loc="center", bbox_to_anchor=(.52, 65/size[1]), ncol=4,
+                       handlelength=2, columnspacing=2, borderpad=0)
+        inset = axes_mm(fig, (x+1, 34.2, 18, 18))
+        inset_mesh = unloading.field_axes(inset, grid, values*100,
+                                          full_mesh.norm, full_mesh.cmap, "")
+        # Each inset repeats the field and shares its column's labelled colorbar.
+        inset_mesh.colorbar = full_mesh.colorbar
+        inset.set(xlabel="", ylabel="", xticks=[], yticks=[])
+        inset.set_axis_off()
+        for direction in (45, 135, 225, 315):
+            vector = np.array([np.cos(np.deg2rad(direction)), np.sin(np.deg2rad(direction))])
+            inset.plot([vector[0], 3*vector[0]], [vector[1], 3*vector[1]],
+                       color=".5", linestyle=":", linewidth=.55)
+        for j, point, region, color, bend in (
+            (0, (2.35, 0), r"$\Omega_{\mathrm{S}}$", fs.RED, -.12),
+            (1, (0, -2.35), r"$\Omega_{\mathrm{T}}$", fs.BLUE, .12),
+        ):
+            inset.text(*point, region, ha="center", va="center", fontsize=7, color=color,
+                       bbox=dict(fc="white", ec="none", pad=.05))
+            arrow = ConnectionPatch(
+                xyA=point, coordsA=inset.transData,
+                xyB=(source["steps"][-2]/12, source["common_region_source_total_mm"][1, -2, j]),
+                coordsB=ax.transData, arrowstyle="-|>", connectionstyle=f"arc3,rad={bend}",
+                color=color, linewidth=.7, mutation_scale=7, shrinkA=7, shrinkB=3,
+            )
+            fig.add_artist(arrow)
     export(fig, "orientation_gauges", size,
            "Fixed regional sources connect orientation-dependent slip histories to the same vertical gauge.",
            ["results/history_analysis/wall_history.npz"] +

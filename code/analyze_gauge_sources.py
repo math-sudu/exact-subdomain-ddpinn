@@ -23,7 +23,6 @@ from publication_model import write_rows
 
 
 SOURCE_NAMES = ("joint_positive", "joint_negative", "matrix")
-REGION_NAMES = ("normal_tangent_positive", "normal_tangent_negative")
 COMMON_REGION_NAMES = ("side", "top_bottom")
 
 
@@ -55,17 +54,15 @@ def integrate_common_regions(angular_density):
     return integrate_oriented_regions(angular_density, 135.)
 
 
-def regional_rows(case_name, arrays, *, common=False):
-    prefix = "common_region" if common else "region"
-    names = COMMON_REGION_NAMES if common else REGION_NAMES
+def regional_rows(case_name, arrays):
     return [dict(case=case_name, load_step=int(step), gauge_deg=float(angle),
                  region=region,
-                 joint_slip_area_integral=float(arrays[f"{prefix}_joint_slip_area_integral"][k, j]),
-                 **{f"{name}_mm": float(arrays[f"{prefix}_{name}_mm"][g, k, j])
+                 joint_slip_area_integral=float(arrays["common_region_joint_slip_area_integral"][k, j]),
+                 **{f"{name}_mm": float(arrays[f"common_region_{name}_mm"][g, k, j])
                     for name in (*SOURCE_NAMES, "source_total")})
             for k, step in enumerate(arrays["steps"])
             for g, angle in enumerate(arrays["gauge_angle_deg"])
-            for j, region in enumerate(names)]
+            for j, region in enumerate(COMMON_REGION_NAMES)]
 
 
 def quadrature(radius, radial_points, angular_points):
@@ -132,11 +129,8 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
     arrays = integrate_source_work(stress, sources, grid)
     arrays["accumulated_joint_slip_strain"] = accumulated_slip.transpose(2, 0, 1)*(C.U_REF/C.A_TUNNEL)
     activity = np.einsum("krt,r->kt", arrays["accumulated_joint_slip_strain"], grid.dr*grid.r)
-    arrays["region_joint_slip_area_integral"] = integrate_oriented_regions(activity, case["joint_normal_deg"])
     arrays["common_region_joint_slip_area_integral"] = integrate_common_regions(activity)
     for name in (*SOURCE_NAMES, "source_total"):
-        arrays[f"region_{name}_mm"] = integrate_oriented_regions(
-            arrays[f"angular_density_{name}_mm"], case["joint_normal_deg"])
         arrays[f"common_region_{name}_mm"] = integrate_common_regions(
             arrays[f"angular_density_{name}_mm"])
 
@@ -161,13 +155,8 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
         density_axes=["gauge", "step", "radius", "source_angle"],
         radial_density_axes=["gauge", "step", "radius"],
         angular_density_axes=["gauge", "step", "source_angle"],
-        region_response_axes=["gauge", "step", "region"],
         accumulated_joint_slip_axes=["step", "radius", "source_angle"],
-        region_joint_slip_area_integral_axes=["step", "region"],
         joint_slip_area_integral="Integral of sum_l |2 t.epsilon_p_joint_increment_l.n| dA/a^2",
-        regions=dict(names=REGION_NAMES, normal_angle_deg=case["joint_normal_deg"],
-                     definition="sign((x.n)*(x.t)), t is n rotated +90 degrees; fixed through unloading",
-                     integration="Exact angular integration of the periodic trigonometric interpolant"),
         common_regions=dict(names=COMMON_REGION_NAMES,
                             definitions=["|x|>|y|", "|y|>|x|"],
                             reference="Global axes; identical in all orientations and load steps",
@@ -202,7 +191,6 @@ def main(argv=None):
     torch.set_num_threads(1)
     args.output.mkdir(parents=True, exist_ok=True)
     rows = []
-    regions = []
     common_regions = []
     for case in args.cases:
         result, arrays = analyze_checkpoint(args.root / case / "model.pt", args.steps, args.angles,
@@ -211,11 +199,9 @@ def main(argv=None):
                                             device=args.device)
         np.savez_compressed(args.output / f"{case}.npz", **arrays)
         rows.extend(result)
-        regions.extend(regional_rows(case, arrays))
-        common_regions.extend(regional_rows(case, arrays, common=True))
+        common_regions.extend(regional_rows(case, arrays))
         print(json.dumps(dict(case=case, steps=args.steps, gauges=args.angles)), flush=True)
     write_rows(args.output / "summary.csv", rows)
-    write_rows(args.output / "regions.csv", regions)
     write_rows(args.output / "common_regions.csv", common_regions)
 
 
