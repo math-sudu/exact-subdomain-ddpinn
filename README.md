@@ -10,7 +10,7 @@ The model couples spatial displacement increments to a fixed differentiable
 anisotropic elastic exterior. A local zero-dilation weak-plane return supplies
 stress and plastic-strain histories, and a virtual-work residual enforces
 equilibrium. The exterior compliance defines the interface residual metric.
-Matrix yielding is monitored as an applicability condition. Material parameters
+The matrix is anisotropic elastic; plastic strain comes from weak-plane slip. Material parameters
 and loads define computational scenarios; they are not calibrated observations.
 
 ## Contents
@@ -188,6 +188,9 @@ The main implementation files are:
 - `code/pilot/virtual_work.py`: exterior-coupled virtual-work equilibrium.
 - `code/pilot/plasticity.py`: yield surfaces and flow directions.
 - `code/analyze_gauge_sources.py`: signed fixed-gauge source integration.
+- `code/pilot/discrete_gauge.py` and `code/diagnose_gauge_sources.py`: endpoint
+  adjoints in the training work space and separation of weak-equilibrium,
+  auxiliary-field and source-quadrature effects.
 - `code/pilot/torch_sf.py` and `code/sf_core/material.py`: anisotropic exterior
   displacement-to-traction map and inverse-stiffness metric.
 - `code/causal_response_problem.py`: material-weighted interface residual.
@@ -208,6 +211,17 @@ The reported nonlinear loading paths are the projected models in
 Their mixed onset weights are supplied in `results/orientation_initialization/`.
 The earlier pointwise precursor is in `results/initialization/model.pt`, with
 settings in `configs/initialization.json`.
+
+To evaluate the endpoint-source relation from the three saved histories:
+
+```bash
+python code/diagnose_gauge_sources.py
+```
+
+The output in `results/history_analysis/gauge_diagnostics/` contains the
+direct gauges, plastic-source work and adjoint residual contributions, plus
+source integrals over common side and top/bottom sectors. Neural displacement
+and constitutive histories are evaluated at their saved weights.
 
 <!-- BEGIN_IDENTIFIED -->
 The pointwise initializer was released at commit
