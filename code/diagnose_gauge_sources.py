@@ -13,6 +13,7 @@ import numpy as np
 import torch
 
 from analyze_gauge_sources import integrate_oriented_regions, integrate_source_work, quadrature
+from current_histories import HISTORIES
 from decompose_eigenstrain_response import plastic_sources
 from interface_extension import geometry
 from pilot import config as C
@@ -37,7 +38,8 @@ def training_plastic(model, points, steps):
 @torch.no_grad()
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, default=ROOT / "results/orientation_extension")
+    parser.add_argument("--root", type=Path,
+                        help="Override the current histories with one root containing <case>/model.pt")
     parser.add_argument("--cases", nargs="+", default=["bedding_crossed", "bedding_oblique", "bedding_aligned"])
     parser.add_argument("--steps", nargs="+", type=int, default=list(range(1, 13)))
     parser.add_argument("--angles", nargs="+", type=float, default=[0., 90., 104.])
@@ -51,11 +53,12 @@ def main(argv=None):
     directions = np.column_stack((np.cos(np.deg2rad(angles)), np.sin(np.deg2rad(angles))))
     endpoints = np.stack((-directions, directions), axis=1)
     summaries, regions = [], []
-    metric = None
+    checkpoints, numerics = {}, {}
     functional_error = identity_error = work_error = 0.
     for case_name in args.cases:
         print(f"Loading {case_name}", flush=True)
-        checkpoint = args.root / case_name / "model.pt"
+        directory = args.root / case_name if args.root else HISTORIES[case_name]
+        checkpoint = directory / "model.pt"
         bundle, saved, model = load_orientation_model(checkpoint)
         if np.any((steps < 1) | (steps > saved["completed_steps"])):
             raise ValueError("Only completed increments may be evaluated")
@@ -64,30 +67,23 @@ def main(argv=None):
         points, stiffness, _, _ = geometry(case, settings, "cpu")
         torch.testing.assert_close(bundle["c"], stiffness, rtol=1e-12, atol=1e-12)
         material = C.material(case["eh_over_ev"], case["bedding_dip_deg"])
-        if metric is None:
-            print("Assembling training matrix and endpoint adjoints", flush=True)
-            metric = VirtualWorkMetric(stiffness, C.nondim_lambda(material), settings, points)
-            influences = [DiscreteGaugeInfluence(metric, pair) for pair in endpoints]
-            adjoints = torch.stack([field.adjoint for field in influences], dim=1)
-            functionals = torch.stack([field.functional for field in influences], dim=1)
-            grid = quadrature(settings["radius"], args.radial_quadrature, args.angular_quadrature)
-            modes = settings["projection"]["angular_modes"]
-            if args.angular_quadrature <= 2 * modes:
-                raise ValueError("Source quadrature must resolve the retained gauge modes")
-            xy = grid.r[:, None, None] * np.column_stack((np.cos(grid.theta), np.sin(grid.theta)))[None]
-            discrete_stress = np.stack([field.stress_on_rings(grid.r, grid.theta) for field in influences])
-            continuous_stress = np.stack([CircularGaugeInfluence(material, pair, modes).stress(xy) for pair in endpoints])
-            train_xy = points.xy_all[:points.n_pde].numpy().reshape(metric.nr, metric.nt, 2)
-            train_angles = np.arctan2(train_xy[..., 1], train_xy[..., 0])
-            training_stress = np.stack([field.stress_on_rings(metric.operator.r, train_angles) for field in influences])
-            first_settings = settings
-            first_points = points.xy_all[:points.n_pde].clone()
-        else:
-            np.testing.assert_array_equal(stiffness.numpy(), metric.operator.c)
-            assert settings["projection"] == first_settings["projection"]
-            assert settings["quadrature"] == first_settings["quadrature"]
-            assert settings["radius"] == first_settings["radius"]
-            torch.testing.assert_close(points.xy_all[:points.n_pde], first_points, rtol=0, atol=0)
+        print("Assembling this case's training matrix and endpoint adjoints", flush=True)
+        metric = VirtualWorkMetric(stiffness, C.nondim_lambda(material), settings, points)
+        influences = [DiscreteGaugeInfluence(metric, pair) for pair in endpoints]
+        adjoints = torch.stack([field.adjoint for field in influences], dim=1)
+        functionals = torch.stack([field.functional for field in influences], dim=1)
+        grid = quadrature(settings["radius"], args.radial_quadrature, args.angular_quadrature)
+        modes = settings["projection"]["angular_modes"]
+        if args.angular_quadrature <= 2 * modes:
+            raise ValueError("Source quadrature must resolve the retained gauge modes")
+        xy = grid.r[:, None, None] * np.column_stack((np.cos(grid.theta), np.sin(grid.theta)))[None]
+        discrete_stress = np.stack([field.stress_on_rings(grid.r, grid.theta) for field in influences])
+        continuous_stress = np.stack([CircularGaugeInfluence(material, pair, modes).stress(xy) for pair in endpoints])
+        train_xy = points.xy_all[:points.n_pde].numpy().reshape(metric.nr, metric.nt, 2)
+        train_angles = np.arctan2(train_xy[..., 1], train_xy[..., 0])
+        training_stress = np.stack([field.stress_on_rings(metric.operator.r, train_angles) for field in influences])
+        checkpoints[case_name] = str(checkpoint.resolve())
+        numerics[case_name] = {key: settings[key] for key in ("radius", "projection", "quadrature")}
 
         print(f"Evaluating training-grid plastic history: {case_name}", flush=True)
         plastic = training_plastic(model, points.xy_all[:points.n_pde], steps)
@@ -144,11 +140,10 @@ def main(argv=None):
         write_rows(args.output / "summary.csv", summaries)
         write_rows(args.output / "regions.csv", regions)
 
-    metadata = dict(producer="code/diagnose_gauge_sources.py", checkpoints=str(args.root.resolve()),
+    metadata = dict(producer="code/diagnose_gauge_sources.py", checkpoints=checkpoints,
         cases=args.cases, steps=args.steps, gauge_angles_deg=args.angles,
-        training_quadrature=first_settings["quadrature"],
+        numerics_by_case=numerics,
         source_quadrature=dict(radial=args.radial_quadrature, angular=args.angular_quadrature),
-        projection=first_settings["projection"],
         identity="D-D_el-S_cont = Re(z^H r_V) + (S_train-S_discrete) + (S_discrete-S_cont)",
         discrete="H^H z=g with the exact VirtualWorkMetric matrix and D_c=Re(g^H d)",
         region_definition="side: |x|>|y|; top_bottom: |y|>|x|; fixed globally for all orientations",
