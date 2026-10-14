@@ -131,6 +131,10 @@ def test_cli_preserves_step_angle_order_units_and_own_step_signed_sources(synthe
         assert metadata["units"]["response"] == "mm"
         assert metadata["density_axes"] == ["gauge", "step", "radius", "source_angle"]
         assert metadata["strain_components"][-2:] == ["zz", "engineering_xy"]
+        assert metadata["common_regions"]["definitions"] == ["|x|>|y|", "|y|>|x|"]
+        for name in (*producer.SOURCE_NAMES, "source_total"):
+            np.testing.assert_allclose(arrays[f"common_region_{name}_mm"].sum(-1),
+                                       arrays[f"{name}_mm"], atol=1e-13)
     assert calls["modes"] == [5, 5, 5]
     assert calls["elastic_steps"] == [1]
     with (output / "regions.csv").open(newline="", encoding="utf-8") as stream:
@@ -149,6 +153,26 @@ def test_cli_preserves_step_angle_order_units_and_own_step_signed_sources(synthe
         expected_activity = np.abs(signed_joint).cumsum()[[1, 0]]*(C.U_REF/C.A_TUNNEL)
         np.testing.assert_allclose(arrays["accumulated_joint_slip_strain"],
                                    np.broadcast_to(expected_activity[:, None, None], (2, 4, 32)))
+    with (output / "common_regions.csv").open(newline="", encoding="utf-8") as stream:
+        common = list(csv.DictReader(stream))
+    assert len(common) == len(regions)
+    for row, original in zip(common, regions):
+        assert row["region"] == {"normal_tangent_positive": "side",
+                                 "normal_tangent_negative": "top_bottom"}[original["region"]]
+        for name in (*producer.SOURCE_NAMES, "source_total"):
+            np.testing.assert_allclose(float(row[f"{name}_mm"]), float(original[f"{name}_mm"]), atol=1e-13)
+        np.testing.assert_allclose(float(row["joint_slip_area_integral"]),
+                                   float(original["joint_slip_area_integral"]), atol=1e-13)
+
+
+def test_common_regions_resolve_global_sides_and_preserve_signed_cancellation():
+    theta = 2 * np.pi * np.arange(64) / 64
+    density = np.stack((2 + 3 * np.cos(2 * theta) - 4 * np.sin(2 * theta),
+                        np.cos(2 * theta), np.sin(2 * theta)))
+    expected = [[2 * np.pi + 6, 2 * np.pi - 6], [2, -2], [0, 0]]
+    np.testing.assert_allclose(producer.integrate_common_regions(density), expected, atol=1e-13)
+    np.testing.assert_allclose(producer.integrate_oriented_regions(density, 45.)[..., ::-1],
+                               expected, atol=1e-13)
 
 
 @pytest.mark.parametrize("normal_angle", [0., 21.3, 45., 135.])

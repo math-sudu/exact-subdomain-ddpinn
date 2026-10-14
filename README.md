@@ -133,10 +133,15 @@ The whole-space figure combines stress paths and signed radial accumulation
 along fixed rays. The compact
 `radial_contributions.csv` contains all twelve states at both locations.
 The source analysis keeps signed contributions of actual stepwise plastic
-strains to fixed horizontal and vertical endpoint gauges. Its two regions are
-defined by the sign of `(x.n)*(x.t)` in material axes. Source closure remains a
-reported numerical discrepancy; the crossed final vertical discrepancy of
-about -0.00312 mm limits interpretation of small last-increment contributions.
+strains to fixed endpoint gauges. `sources/common_regions.csv` and the
+`common_region_*` NPZ arrays use the same global side (`|x|>|y|`) and top/bottom
+(`|y|>|x|`) sectors in every orientation. They include each source's signed
+contribution and accumulated joint-slip activity at all twelve load steps.
+`sources/regions.csv` and the `region_*` arrays retain the material-axis
+partition, defined by the sign of `(x.n)*(x.t)`, used in the current figure.
+The crossed final vertical source difference of about -0.00312 mm is
+predominantly the endpoint projection of weak-equilibrium residual; its
+source increments and direct nonelastic increments therefore remain distinct.
 
 ## Query the trained model
 

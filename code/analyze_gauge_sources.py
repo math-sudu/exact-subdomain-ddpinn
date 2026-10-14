@@ -24,6 +24,7 @@ from publication_model import write_rows
 
 SOURCE_NAMES = ("joint_positive", "joint_negative", "matrix")
 REGION_NAMES = ("normal_tangent_positive", "normal_tangent_negative")
+COMMON_REGION_NAMES = ("side", "top_bottom")
 
 
 def integrate_oriented_regions(angular_density, normal_angle_deg):
@@ -49,15 +50,22 @@ def integrate_oriented_regions(angular_density, normal_angle_deg):
     return np.stack((positive, total - positive), axis=-1)
 
 
-def regional_rows(case_name, arrays):
+def integrate_common_regions(angular_density):
+    """Integrate over |x|>|y| and |y|>|x| in the same global axes for every case."""
+    return integrate_oriented_regions(angular_density, 135.)
+
+
+def regional_rows(case_name, arrays, *, common=False):
+    prefix = "common_region" if common else "region"
+    names = COMMON_REGION_NAMES if common else REGION_NAMES
     return [dict(case=case_name, load_step=int(step), gauge_deg=float(angle),
                  region=region,
-                 joint_slip_area_integral=float(arrays["region_joint_slip_area_integral"][k, j]),
-                 **{f"{name}_mm": float(arrays[f"region_{name}_mm"][g, k, j])
+                 joint_slip_area_integral=float(arrays[f"{prefix}_joint_slip_area_integral"][k, j]),
+                 **{f"{name}_mm": float(arrays[f"{prefix}_{name}_mm"][g, k, j])
                     for name in (*SOURCE_NAMES, "source_total")})
             for k, step in enumerate(arrays["steps"])
             for g, angle in enumerate(arrays["gauge_angle_deg"])
-            for j, region in enumerate(REGION_NAMES)]
+            for j, region in enumerate(names)]
 
 
 def quadrature(radius, radial_points, angular_points):
@@ -125,9 +133,12 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
     arrays["accumulated_joint_slip_strain"] = accumulated_slip.transpose(2, 0, 1)*(C.U_REF/C.A_TUNNEL)
     activity = np.einsum("krt,r->kt", arrays["accumulated_joint_slip_strain"], grid.dr*grid.r)
     arrays["region_joint_slip_area_integral"] = integrate_oriented_regions(activity, case["joint_normal_deg"])
+    arrays["common_region_joint_slip_area_integral"] = integrate_common_regions(activity)
     for name in (*SOURCE_NAMES, "source_total"):
         arrays[f"region_{name}_mm"] = integrate_oriented_regions(
             arrays[f"angular_density_{name}_mm"], case["joint_normal_deg"])
+        arrays[f"common_region_{name}_mm"] = integrate_common_regions(
+            arrays[f"angular_density_{name}_mm"])
 
     endpoint_xy = like.new_tensor(endpoints.reshape(-1, 2))
     retained = model(endpoint_xy)[0][:, steps - 1].cpu().numpy().reshape(len(angles), 2, len(steps), 2)
@@ -157,6 +168,12 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
         regions=dict(names=REGION_NAMES, normal_angle_deg=case["joint_normal_deg"],
                      definition="sign((x.n)*(x.t)), t is n rotated +90 degrees; fixed through unloading",
                      integration="Exact angular integration of the periodic trigonometric interpolant"),
+        common_regions=dict(names=COMMON_REGION_NAMES,
+                            definitions=["|x|>|y|", "|y|>|x|"],
+                            reference="Global axes; identical in all orientations and load steps",
+                            response_axes=["gauge", "step", "region"],
+                            joint_slip_area_integral_axes=["step", "region"],
+                            integration="Exact angular integration of the periodic trigonometric interpolant"),
         response_axes=["gauge", "step"],
         units=dict(response="mm", density="mm per unit dA/a^2",
                    radial_density="mm per unit d(r/a)", angular_density="mm/radian",
@@ -186,6 +203,7 @@ def main(argv=None):
     args.output.mkdir(parents=True, exist_ok=True)
     rows = []
     regions = []
+    common_regions = []
     for case in args.cases:
         result, arrays = analyze_checkpoint(args.root / case / "model.pt", args.steps, args.angles,
                                             radial_quadrature=args.radial_quadrature,
@@ -194,9 +212,11 @@ def main(argv=None):
         np.savez_compressed(args.output / f"{case}.npz", **arrays)
         rows.extend(result)
         regions.extend(regional_rows(case, arrays))
+        common_regions.extend(regional_rows(case, arrays, common=True))
         print(json.dumps(dict(case=case, steps=args.steps, gauges=args.angles)), flush=True)
     write_rows(args.output / "summary.csv", rows)
     write_rows(args.output / "regions.csv", regions)
+    write_rows(args.output / "common_regions.csv", common_regions)
 
 
 if __name__ == "__main__":
