@@ -78,11 +78,14 @@ def prefix_cache(model, xy, stiffness, insitu, params):
     if model.n_steps == 0:
         z4, z2 = xy.new_zeros((len(xy),4)), xy.new_zeros((len(xy),2))
         return dict(displacement=z2,stress_increment=z4,strain=z4,
-                    plastic_strain=z4,equilibrium=z2,xy=xy.detach().clone())
-    parts = [field_history(model, x, stiffness, insitu, params) for x in xy.split(2048)]
+                    plastic_strain=z4,equilibrium=z2,stress_gradient=z4.new_zeros((2, len(xy), 4)),
+                    xy=xy.detach().clone())
+    parts = [field_history(model, x, stiffness, insitu, params, include_stress_gradient=True)
+             for x in xy.split(2048)]
     cache = {key: torch.cat([part[key][:,-1] for part in parts]).detach()
              for key in ('displacement','stress_increment','strain','plastic_strain','equilibrium')}
     cache['xy'] = xy.detach().clone()
+    cache['stress_gradient'] = torch.cat([part['stress_gradient'][:, :, -1] for part in parts], dim=1).detach()
     return cache
 
 

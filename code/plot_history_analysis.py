@@ -15,7 +15,6 @@ from figure_artwork import ROOT, axes_mm, fs
 DATA = ROOT / "results/history_analysis"
 OUTPUT = ROOT / "figures"
 BASELINE = ROOT / "results/unloading"
-HISTORY = ROOT / "results/orientation_extension"
 META = json.loads((BASELINE / "metadata.json").read_text())
 
 
@@ -162,6 +161,10 @@ def orientation_gauges():
     cases = ["bedding_oblique", "bedding_aligned", "bedding_crossed"]
     labels = ["Oblique", "Parallel", "Perpendicular"]
     grid = np.load(BASELINE / "fields.npz")
+    insets = np.load(DATA / "slip_insets.npz")
+    np.testing.assert_array_equal(insets["cases"], cases)
+    np.testing.assert_array_equal(insets["radius_over_a"], grid["radius_over_a"])
+    np.testing.assert_array_equal(insets["angle_rad"], grid["angle_rad"])
     norm = SymLogNorm(.001, vmin=0, vmax=.35)
     cmap = unloading.field_palette()
     inset_meshes = []
@@ -196,10 +199,7 @@ def orientation_gauges():
             fig.legend(*ax.get_legend_handles_labels(), fontsize=7.5, frameon=False,
                        loc="center", bbox_to_anchor=(.52, 73/size[1]), ncol=4,
                        handlelength=2, columnspacing=2, borderpad=0)
-        with np.load(HISTORY / case / "fields.npz") as f:
-            np.testing.assert_allclose(f["radius_over_a"], grid["radius_over_a"], atol=1e-12)
-            np.testing.assert_allclose(np.deg2rad(f["angle_deg"]), grid["angle_rad"], atol=1e-12)
-            values = f["accumulated_slip_strain"][:, :, -1]
+        values = insets["accumulated_slip_strain"][i]
         inset = axes_mm(fig, (x+.8, 40, 22, 22))
         inset_meshes.append(unloading.field_axes(inset, grid, values*100, norm, cmap, ""))
         inset.set(xlabel="", ylabel="", xticks=[], yticks=[])
@@ -234,8 +234,7 @@ def orientation_gauges():
         mesh.colorbar = bar
     export(fig, "orientation_gauges", size,
            "Fixed regional sources connect orientation-dependent slip histories to the same vertical gauge.",
-           ["results/history_analysis/wall_history.npz"] +
-           [(HISTORY / case / "fields.npz").relative_to(ROOT).as_posix() for case in cases] +
+           ["results/history_analysis/wall_history.npz", "results/history_analysis/slip_insets.npz"] +
            [f"results/history_analysis/sources/{case}.npz" for case in cases])
 
 

@@ -76,28 +76,6 @@
         ],
         "opening_angle_deg": 0,
         "joint_normal_deg": 0
-      },
-      {
-        "name": "bedding_aligned",
-        "eh_over_ev": 2.625,
-        "bedding_dip_deg": 45,
-        "opening_axes": [
-          1,
-          1
-        ],
-        "opening_angle_deg": 0,
-        "joint_normal_deg": 135
-      },
-      {
-        "name": "bedding_crossed",
-        "eh_over_ev": 2.625,
-        "bedding_dip_deg": 45,
-        "opening_axes": [
-          1,
-          1
-        ],
-        "opening_angle_deg": 0,
-        "joint_normal_deg": 45
       }
     ]
   },

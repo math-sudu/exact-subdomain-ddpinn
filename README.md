@@ -20,14 +20,15 @@ and loads define computational scenarios; they are not calibrated observations.
 - `configs/initialization.json`: final-stage settings of the shared pointwise
   initialization calculation.
 - `configs/orientation_extension.json`: the local-return nonlinear calculation.
+- `configs/orientation_bedding_crossed.json`: the perpendicular case's final-step settings.
 - `configs/orientation_spectral.json`: the earlier mixed formulation used by
   the initialization and projection tests.
 - `results/model/model.pt`: consolidated final weights for all twelve spatial
   increment networks, together with their architecture and material parameters.
 - `results/initialization/model.pt`: the pointwise networks used to initialize
   the three matched nonlinear cases.
-- `results/orientation_initialization/`: same-orientation mixed onset weights
-  used to start the local-return histories.
+- `results/orientation_initialization/`: same-orientation initial weights
+  (mixed onsets for oblique/parallel and a trained 3a history for perpendicular).
 - `results/history_analysis/`: fixed gauges, slip sectors and signed regional
   source integrals for the three completed histories.
 - `results/unloading/`: small load-summary and fixed-location response tables,
@@ -45,17 +46,22 @@ defines 24 paired circular elastic trials across four interface metrics and
 two anisotropy strengths, plus three calculations for an equal-area inclined
 elliptical opening.
 Each metric starts from the same stored initial
-field for each seed. `configs/orientation_extension.json` defines matched
+field for each seed. `configs/orientation_extension.json` defines
 unloading histories with oblique, parallel and perpendicular weak-plane traces
 relative to the elastic bedding. Their exact elastic prefixes contain four,
 two and three increments, respectively. The first plastic increment starts
-from the supplied same-orientation mixed onset; subsequent increments copy
-the preceding trained displacement. The two active displacement outputs are
+from the supplied same-orientation mixed onset for oblique/parallel;
+subsequent increments copy the preceding trained displacement. The perpendicular
+history uses same-orientation trained step networks as initial guesses on an
+enlarged 4a annulus, solving increments in load order with the accepted prefix
+fixed. The two active displacement outputs are
 projected onto Chebyshev--Fourier fields before local constitutive return.
-Radial order 32 and angular modes 0--64 are retained, with
-256 angular projection nodes. Quadrature uses 48 radial Gauss points, 256
-angles per ring and 1,024 points per boundary. Ring angles are staggered;
-off-training-grid evaluation doubles the counts and shifts the angles.
+Oblique/parallel histories use an interface at 3a and radial order 32;
+the perpendicular history uses 4a and order 40. All use angular modes 0--64
+and 256 projection nodes. Volume quadrature has 48 radial Gauss points and
+256 angles per ring for oblique/parallel, 64 by 256 for the perpendicular
+plastic increments, and 96 by 512 for its final increment. Each boundary
+uses 1,024 points. Field exports read each checkpoint's own settings.
 
 `results/interface_extension/` and `results/orientation_extension/` contain
 the final networks, training trajectories and compact response tables.
@@ -140,9 +146,11 @@ contribution and accumulated joint-slip activity at all twelve load steps.
 The six-panel orientation figure uses these common sectors, with enlarged
 final slip-field insets linking each region to its contribution curve.
 The insets retain bedding and weak-plane directions and share one colorbar.
-The crossed final vertical source difference of about -0.00312 mm is
-predominantly the endpoint projection of weak-equilibrium residual; its
-source increments and direct nonelastic increments therefore remain distinct.
+The perpendicular history gives 0.513745 mm vertical shortening and
+0.054013 mm vertical plastic source; the common elastic part is 0.460184 mm.
+Side and top/bottom sectors contribute 0.045018 and 0.008995 mm, respectively.
+The slip insets query the common a<r<3a window even when the computational
+interface lies at 4a.
 
 ## Query the trained model
 
@@ -188,7 +196,7 @@ The main implementation files are:
 - `code/pilot/causal_mixed.py`: base increment networks and mixed initializer.
 - `code/pilot/spectral_mixed.py`: differentiable polar projection, resolved
   basis derivatives and frozen projected history.
-- `code/run_orientation_extension.py`: the matched nonlinear training protocol.
+- `code/run_orientation_extension.py`: sequential nonlinear training.
 - `code/pilot/joint_return.py`: closed-form local weak-plane return.
 - `code/pilot/returned_orientation.py`: displacement-only neural residuals.
 - `code/pilot/virtual_work.py`: exterior-coupled virtual-work equilibrium.
@@ -214,7 +222,7 @@ with `problem.assemble(problem.theta)`.
 
 The reported nonlinear loading paths are the projected models in
 `results/model/` and `results/orientation_extension/`.
-Their mixed onset weights are supplied in `results/orientation_initialization/`.
+Their initialization weights are supplied in `results/orientation_initialization/`.
 The earlier pointwise precursor is in `results/initialization/model.pt`, with
 settings in `configs/initialization.json`.
 

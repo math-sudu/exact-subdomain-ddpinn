@@ -42,6 +42,13 @@ def export_case(destination, case, settings, model, c, s0, params):
     unit = np.stack((np.cos(angles), np.sin(angles)), -1)
     xy = (radius[:, None, None] * unit[None]).reshape(-1, 2)
     data = sample_fields(bundle, model, xy)
+    for name, value in data.items():
+        if not np.isfinite(value).all():
+            point, step = np.argwhere(~np.isfinite(value))[0][:2]
+            raise ValueError(
+                f"Nonfinite {name} at step {step + 1}, "
+                f"r/a={np.linalg.norm(xy[point]):.8g}, "
+                f"angle={np.rad2deg(np.arctan2(xy[point, 1], xy[point, 0])) % 360:.8g} degrees")
     arrays = {key: value.reshape(len(radius), len(angles), *value.shape[1:]).astype(np.float32)
               for key, value in data.items()}
     np.savez_compressed(destination / "fields.npz", radius_over_a=radius,

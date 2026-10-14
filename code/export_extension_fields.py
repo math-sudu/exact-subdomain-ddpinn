@@ -62,8 +62,8 @@ def main():
                                        settings, case, seed, metric, args.device)
                         exported += 1
             else:
-                bundle, _, model = load_orientation_model(directory / "model.pt", args.device)
-                export_case(directory, case, settings, model,
+                bundle, saved, model = load_orientation_model(directory / "model.pt", args.device)
+                export_case(directory, case, saved["settings"], model,
                             bundle["c"], bundle["s0"], bundle["params"])
                 print(f"Exported {case['name']}", flush=True)
                 exported += 1

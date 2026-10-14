@@ -11,20 +11,20 @@
     "joint_normal_deg": 45
   },
   "settings": {
-    "question": "Solve the actual causal neural displacement with exact local zero-dilation weak-plane return, retaining the elastic prefix and exact exterior. Assess spatial equilibrium, boundary tractions and fixed gauges before accepting each plastic increment.",
+    "question": "Resolve the final crossed increment's near-wall local return with 96 radial and 512 angular integration points; steps 1\u201311 retain their solved fields.",
     "hidden": [
       64,
       64,
       64,
       64
     ],
-    "radius": 3,
+    "radius": 4,
     "load_steps": 12,
     "representation": "spectral",
     "constitutive_update": "joint_return",
     "equilibrium_form": "virtual_work",
     "projection": {
-      "radial_order": 32,
+      "radial_order": 40,
       "angular_modes": 64,
       "angular_samples": 256,
       "centrosymmetric": true
@@ -32,8 +32,8 @@
     "elastic_prefix": "circular",
     "plastic_initialization": "preceding_trained_increment",
     "quadrature": {
-      "radial": 48,
-      "angular": 256,
+      "radial": 96,
+      "angular": 512,
       "boundary": 1024,
       "stagger_angles": true,
       "radial_power": 1
@@ -45,7 +45,7 @@
       "constitutive": 5.703692056986043,
       "complementarity": 100,
       "gauge": 1,
-      "virtual_work": 25.132741228718345
+      "virtual_work": 47.12388980384689
     },
     "interface_metric": "compliance",
     "trust_region": {
@@ -67,28 +67,6 @@
     },
     "cases": [
       {
-        "name": "bedding_oblique",
-        "eh_over_ev": 2.625,
-        "bedding_dip_deg": 45,
-        "opening_axes": [
-          1,
-          1
-        ],
-        "opening_angle_deg": 0,
-        "joint_normal_deg": 0
-      },
-      {
-        "name": "bedding_aligned",
-        "eh_over_ev": 2.625,
-        "bedding_dip_deg": 45,
-        "opening_axes": [
-          1,
-          1
-        ],
-        "opening_angle_deg": 0,
-        "joint_normal_deg": 135
-      },
-      {
         "name": "bedding_crossed",
         "eh_over_ev": 2.625,
         "bedding_dip_deg": 45,
@@ -103,17 +81,17 @@
   },
   "fixed_locations": {
     "maximum_convergence": {
-      "angle_deg": 105.00000000000001,
+      "angle_deg": 104.5,
       "xy_over_a": [
-        -0.25881904510252085,
-        0.9659258262890683
+        -0.2503800040544414,
+        0.9681476403781077
       ]
     },
     "maximum_slip": {
-      "angle_deg": 36.5,
+      "angle_deg": 216.0,
       "xy_over_a": [
-        0.8038568606172173,
-        0.5948227867513413
+        -0.8090169943749475,
+        -0.587785252292473
       ]
     }
   },

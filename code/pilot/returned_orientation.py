@@ -4,6 +4,7 @@ import torch
 
 from . import config as C, plasticity as P
 from .joint_return import joint_return
+from .discrete_gauge import DiscreteGaugeInfluence
 from .orientation_tangent import NeuralCoordinates, OrientationResidual
 
 
@@ -73,26 +74,29 @@ class ReturnedOrientationResidual(OrientationResidual):
         if self.equilibrium_form == "virtual_work" and saved["settings"]["weights"]["virtual_work"] <= 0:
             raise ValueError("Weak equilibrium requires a positive virtual-work weight")
         super().__init__(model, saved, params, evaluation=evaluation, duals=False)
-        current = model.increments[-1]
-        del model.increments[-1]
-        try:
-            with torch.no_grad():
-                if model.n_steps:
-                    gradients = []
-                    for xy in self.pts.xy_all.split(1024):
-                        gradients.append(torch.stack([torch.func.jvp(
-                            lambda points: model(points)[1][:, -1], (xy,),
-                            (torch.eye(2, device=xy.device, dtype=xy.dtype)[axis].expand_as(xy),))[1]
-                            for axis in range(2)]))
-                    stress_gradient = torch.cat(gradients, dim=1)
-                else:
-                    stress_gradient = self.c.new_zeros((2, len(self.pts.xy_all), 4))
-                self.previous_elastic_gradient = torch.linalg.solve(
-                    self.c, stress_gradient.unsqueeze(-1)).squeeze(-1)
-                self.background_strain_gradient = torch.linalg.solve(self.c,
-                    self.cache["increment_background"][1][1].unsqueeze(-1)).squeeze(-1)
-        finally:
-            model.increments.append(current)
+        self.gauge_influences = ([] if self.work is None else [
+            (0, DiscreteGaugeInfluence(self.work, [[-1., 0.], [1., 0.]])),
+            (90, DiscreteGaugeInfluence(self.work, [[0., -1.], [0., 1.]]))])
+        with torch.no_grad():
+            self.previous_elastic_gradient = torch.linalg.solve(
+                self.c, self.cache["stress_gradient"].unsqueeze(-1)).squeeze(-1)
+            self.background_strain_gradient = torch.linalg.solve(self.c,
+                self.cache["increment_background"][1][1].unsqueeze(-1)).squeeze(-1)
+
+    @torch.no_grad()
+    def gauge_response(self, coefficients, plastic_strain):
+        """Monitor the measured response and its work source during training."""
+        if self.work is None:
+            return []
+        vector = self.work.correction_vector(self.prefix_coefficients + coefficients[..., :2])
+        load = self.work.source_load(plastic_strain[:self.pts.n_pde])
+        residual = self.work.matrix @ vector - load
+        scale = C.U_REF * 1000
+        return [dict(gauge_deg=angle,
+            nonelastic_mm=float((influence.functional.conj() @ vector).real) * scale,
+            source_training_mm=float((influence.adjoint.conj() @ load).real) * scale,
+            residual_projection_mm=float((influence.adjoint.conj() @ residual).real) * scale)
+            for angle, influence in self.gauge_influences]
 
     def blocks(self, coefficients):
         # Returned stress is continuous at activation. Its spatial derivative
@@ -144,6 +148,11 @@ class ReturnedOrientationResidual(OrientationResidual):
         joint_return(h["trial_stress"], self.c, self.params)
         matrix_max = h["yield_values"][:, 0].max()
         result = super().assessment(coefficients)
+        for response in self.gauge_response(coefficients, h["plastic_strain"]):
+            suffix = f"_{response['gauge_deg']}_mm"
+            result["nonelastic" + suffix] = response["nonelastic_mm"]
+            result["source_training" + suffix] = response["source_training_mm"]
+            result["residual_projection" + suffix] = response["residual_projection_mm"]
         peak = r["equilibrium"].norm(dim=-1).argmax()
         xy = self.pts.xy_all[peak]
         result["principal_point"] = dict(radius=float(xy.norm()),

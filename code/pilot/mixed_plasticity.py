@@ -36,7 +36,7 @@ def make_geometry(cfg, device, dtype, seed, *, shift=0.0):
     return pts, stiffness, insitu, sf
 
 
-def field_history(model, xy, stiffness, insitu, params):
+def field_history(model, xy, stiffness, insitu, params, *, include_stress_gradient=False):
     xy = xy.detach()
     directions = torch.stack((P._spatial_direction(xy, 0), P._spatial_direction(xy, 1)))
     values, derivatives = torch.vmap(lambda d: torch.func.jvp(model, (xy,), (d,)))(directions)
@@ -51,7 +51,7 @@ def field_history(model, xy, stiffness, insitu, params):
                          + gamma[..., 1:]*P.joint_flow_direction(total, params))
     scaled_gamma = gamma / model.multiplier_scale
     yield_values = torch.stack((P.matrix_yield(total, params), P.joint_yield(total, params)), -1)
-    return dict(displacement=u, stress_increment=stress, stress_total=total,
+    history = dict(displacement=u, stress_increment=stress, stress_total=total,
                 multiplier_increment=gamma, scaled_multiplier=scaled_gamma,
                 strain=strain, plastic_strain=constitutive_flow.cumsum(1), delta_plastic=constitutive_flow,
                 kinematic_plastic_strain=kinematic_plastic, kinematic_delta_plastic=kinematic_delta,
@@ -62,3 +62,6 @@ def field_history(model, xy, stiffness, insitu, params):
                 constitutive=(kinematic_plastic-constitutive_flow.cumsum(1)) @ stiffness.T,
                 complementarity=P._fischer_burmeister(scaled_gamma, -yield_values,
                                                        params.complementarity_smoothing))
+    if include_stress_gradient:
+        history["stress_gradient"] = ds
+    return history

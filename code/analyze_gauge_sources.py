@@ -95,15 +95,18 @@ def integrate_source_work(auxiliary_stress, sources, grid):
 
 @torch.no_grad()
 def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
-                       radial_quadrature=64, angular_quadrature=512, device="cpu"):
-    """Query only completed increments of the explicitly selected checkpoint."""
+                       radial_quadrature=64, angular_quadrature=512, device="cpu",
+                       include_pending=False):
+    """Integrate completed increments, or explicitly assess a pending iterate."""
     checkpoint = Path(checkpoint)
     steps = np.array([index(step) for step in steps], dtype=int)
     angles = np.asarray(angles, dtype=float)
     bundle, saved, model = load_orientation_model(checkpoint, device)
     completed = saved["completed_steps"]
-    if not len(steps) or np.any((steps < 1) | (steps > completed)):
-        raise ValueError(f"Requested steps must be completed increments 1..{completed}")
+    available = model.n_steps if include_pending else completed
+    if not len(steps) or np.any((steps < 1) | (steps > available)):
+        selection = "available" if include_pending else "completed"
+        raise ValueError(f"Requested steps must be {selection} increments 1..{available}")
     if angles.ndim != 1 or not len(angles) or not np.isfinite(angles).all():
         raise ValueError("Gauge angles must be a nonempty finite sequence")
     settings, case = saved["settings"], saved["case"]
@@ -112,7 +115,7 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
     modes = settings["projection"]["angular_modes"]
     if angular_quadrature <= 2 * modes:
         raise ValueError("Angular quadrature must resolve the retained gauge modes")
-    # Even a checkpoint with a pending next step must never query that field.
+    # A pending field enters the query only when explicitly selected above.
     del model.increments[int(steps.max()):]
     like = model.multiplier_scale
     elastic_field = CircularElasticIncrement(case, total_steps=1, like=like)
@@ -126,6 +129,14 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
     xy = grid.r[:, None, None] * np.column_stack((np.cos(grid.theta), np.sin(grid.theta)))[None]
     stress = np.stack([CircularGaugeInfluence(material, pair, modes).stress(xy) for pair in endpoints])
     sources, accumulated_slip = plastic_sources(bundle, model, grid, steps)
+    finite = np.isfinite(accumulated_slip)
+    for value in sources.values():
+        finite &= np.isfinite(value).all(axis=-1)
+    if not finite.all():
+        ir, it, ik = np.argwhere(~finite)[0]
+        raise ValueError(
+            f"Nonfinite plastic history at step {steps[ik]}, r/a={grid.r[ir]:.8g}, "
+            f"angle={np.rad2deg(grid.theta[it]):.8g} degrees")
     arrays = integrate_source_work(stress, sources, grid)
     arrays["accumulated_joint_slip_strain"] = accumulated_slip.transpose(2, 0, 1)*(C.U_REF/C.A_TUNNEL)
     activity = np.einsum("krt,r->kt", arrays["accumulated_joint_slip_strain"], grid.dr*grid.r)
@@ -147,6 +158,8 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
             for k, step in enumerate(steps) for g, angle in enumerate(angles)]
     metadata = dict(
         checkpoint=str(checkpoint.resolve()), case=case, completed_steps=int(completed),
+        queried_pending_step=(int(steps.max()) if steps.max() > completed else None),
+        pending_evaluations=(saved["evaluations"] if steps.max() > completed else None),
         total_steps=model.total_steps, gauge_modes=modes,
         source="Cumulative signed flow evaluated at each increment's own total stress",
         gauge="D=-(u2-u1).e12; endpoints=(-e,+e); auxiliary force Q=1",
@@ -179,7 +192,8 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, required=True, help="Root containing <case>/model.pt")
+    parser.add_argument("--root", type=Path,
+                        help="Override the current histories with one root containing <case>/model.pt")
     parser.add_argument("--cases", nargs="+", required=True)
     parser.add_argument("--steps", nargs="+", type=int, required=True)
     parser.add_argument("--angles", nargs="+", type=float, default=[0., 90., 104.])
@@ -187,16 +201,20 @@ def main(argv=None):
     parser.add_argument("--radial-quadrature", type=int, default=64)
     parser.add_argument("--angular-quadrature", type=int, default=512)
     parser.add_argument("--device", default="cpu")
+    parser.add_argument("--include-pending", action="store_true",
+                        help="Assess the current iterate while retaining its pending status in metadata")
     args = parser.parse_args(argv)
     torch.set_num_threads(1)
     args.output.mkdir(parents=True, exist_ok=True)
     rows = []
     common_regions = []
+    from current_histories import HISTORIES
     for case in args.cases:
-        result, arrays = analyze_checkpoint(args.root / case / "model.pt", args.steps, args.angles,
+        directory = args.root / case if args.root else HISTORIES[case]
+        result, arrays = analyze_checkpoint(directory / "model.pt", args.steps, args.angles,
                                             radial_quadrature=args.radial_quadrature,
                                             angular_quadrature=args.angular_quadrature,
-                                            device=args.device)
+                                            device=args.device, include_pending=args.include_pending)
         np.savez_compressed(args.output / f"{case}.npz", **arrays)
         rows.extend(result)
         common_regions.extend(regional_rows(case, arrays))

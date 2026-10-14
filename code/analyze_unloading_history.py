@@ -8,7 +8,8 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from extract_unloading_results import plane_shear, stress_path_rows
+from current_histories import HISTORIES
+from extract_unloading_results import plane_shear, sample_fields, stress_path_rows
 from pilot import plasticity as P
 from pilot.spectral_mixed import load_orientation_model
 from publication_model import write_rows
@@ -17,7 +18,6 @@ from sf_core.material import TIMaterial
 ROOT = Path(__file__).resolve().parents[1]
 CASES = ("bedding_oblique", "bedding_aligned", "bedding_crossed")
 OUTPUT = ROOT / "results/history_analysis"
-HISTORY = ROOT / "results/orientation_extension"
 
 
 def material_from_metadata(metadata):
@@ -126,20 +126,41 @@ def whole_space(model, metadata, angles):
                 convergence_mm=-ur[:, 0], interface_mean_mm=mean * scale)
 
 
+@torch.no_grad()
+def slip_inset(bundle, model, checkpoint, grid):
+    """Keep the common display window when a computational interface moves."""
+    radius, angles = grid["radius_over_a"], grid["angle_rad"]
+    if bundle["spec"]["r_gamma"] == grid["radius_edges_over_a"][-1]:
+        with np.load(checkpoint.with_name("fields.npz")) as fields:
+            np.testing.assert_allclose(fields["radius_over_a"], radius, atol=1e-12)
+            np.testing.assert_allclose(np.deg2rad(fields["angle_deg"]), angles, atol=1e-12)
+            values = fields["accumulated_slip_strain"][:, :, -1]
+    else:
+        unit = np.column_stack((np.cos(angles), np.sin(angles)))
+        xy = (radius[:, None, None] * unit[None]).reshape(-1, 2)
+        fields = sample_fields(bundle, model, xy)
+        values = fields["accumulated_slip_strain"][:, -1].reshape(len(radius), len(angles)).astype(np.float32)
+    if not np.isfinite(values).all():
+        raise ValueError(f"Nonfinite final slip in the display window: {checkpoint}")
+    return values
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=OUTPUT)
-    parser.add_argument("--root", type=Path, default=HISTORY,
-                        help="Completed orientation histories containing <case>/model.pt")
+    parser.add_argument("--root", type=Path,
+                        help="Override the current histories with one root containing <case>/model.pt")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     torch.set_num_threads(1)
     angles = np.arange(720) * .5
     metadata = json.loads((ROOT / "results/unloading/metadata.json").read_text())
+    grid = np.load(ROOT / "results/unloading/fields.npz")
     histories, sectors, gauges, summaries, models = [], [], [], [], []
-    paths = []
+    paths, insets = [], []
     for case in CASES:
-        checkpoint = args.root.resolve() / case / "model.pt"
+        directory = args.root.resolve() / case if args.root else HISTORIES[case]
+        checkpoint = directory / "model.pt"
         bundle, saved, model = load_orientation_model(checkpoint)
         if saved["completed_steps"] != model.total_steps:
             raise ValueError(f"Incomplete unloading history: {checkpoint}")
@@ -156,9 +177,13 @@ def main():
                               diagonal_45_mm=diametric[90, -1], diagonal_135_mm=diametric[270, -1]))
         paths.append(checkpoint.relative_to(ROOT).as_posix())
         models.append((bundle, model))
+        insets.append(slip_inset(bundle, model, checkpoint, grid))
         print(case, summaries[-1], flush=True)
     arrays = {key: np.stack([h[key] for h in histories]) for key in histories[0]}
     np.savez_compressed(args.output / "wall_history.npz", angle_deg=angles, cases=CASES, **arrays)
+    np.savez_compressed(args.output / "slip_insets.npz", cases=CASES,
+                        radius_over_a=grid["radius_over_a"], angle_rad=grid["angle_rad"],
+                        accumulated_slip_strain=np.stack(insets))
     write_rows(args.output / "slip_sectors.csv", sectors)
     write_rows(args.output / "gauge_histories.csv", gauges)
     write_rows(args.output / "gauge_summary.csv", summaries)
@@ -172,6 +197,7 @@ def main():
         points[name] = dict(angle_deg=angle, xy_over_a=[np.cos(np.deg2rad(angle)), np.sin(np.deg2rad(angle))])
     write_rows(args.output / "fixed_sector_stress_paths.csv", stress_path_rows(bundle, model, points))
     provenance = dict(checkpoints=paths, producer="code/analyze_unloading_history.py",
+                      slip_insets="Final slip on the baseline a<r<3a grid; expanded histories are queried at these coordinates",
                       angles="Counterclockwise from +x; original 0–360 degree fields retained",
                       branch_definition="Shear sign and fixed 180-degree half; no global-rank tracking",
                       scales=metadata["scales"],
