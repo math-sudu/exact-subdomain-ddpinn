@@ -81,11 +81,13 @@ def elastic():
 
 
 @torch.no_grad()
-def orientation_history_residuals(checkpoint, device):
+def orientation_history_residuals(checkpoint, device, *, require_complete=True):
+    """Evaluate completed increments at their original fractions of total loading."""
     bundle, saved, model = load_orientation_model(checkpoint, device)
     settings, case = saved["settings"], saved["case"]
-    if saved["completed_steps"] != settings["load_steps"]:
+    if require_complete and saved["completed_steps"] != settings["load_steps"]:
         raise RuntimeError(f"Incomplete orientation history: {checkpoint}")
+    model.increments = model.increments[:saved["completed_steps"]]
     rows = []
     for evaluation in (False, True):
         pts, c, s0, sf = geometry(case, settings, device, evaluation=evaluation)
@@ -117,6 +119,7 @@ def exterior_yield_rows(checkpoint, device):
     """Check the elastic domain assumed by the same coupled exterior model."""
     bundle, saved, model = load_orientation_model(checkpoint, device)
     settings, case = saved["settings"], saved["case"]
+    model.increments = model.increments[:saved["completed_steps"]]
     mat = C.material(case["eh_over_ev"], case["bedding_dip_deg"])
     radius = settings["radius"]
     n_gamma = settings["quadrature"]["boundary"]
@@ -146,6 +149,27 @@ def exterior_yield_rows(checkpoint, device):
     return rows
 
 
+def orientation_response(source, case, load_steps):
+    """Summarize the exported wall response without rerunning field diagnostics."""
+    paths = read(source / "stress_paths.csv")
+    a, b = (next(row for row in paths if row["location"] == name and
+                 int(row["load_step"]) == load_steps)
+            for name in ("maximum_convergence", "maximum_slip"))
+    wall = [row for row in read(source / "wall_profiles.csv")
+            if int(row["load_step"]) == load_steps]
+    return dict(case=case["name"], joint_normal_deg=case["joint_normal_deg"],
+        convergence_max_mm=float(a["closure_mm"]),
+        convergence_mean_mm=float(np.mean([float(row["convergence_mm"]) for row in wall])),
+        slip_max_percent=100*float(b["accumulated_slip_strain"]),
+        convergence_at_slip_max_mm=float(b["closure_mm"]),
+        convergence_ratio_B_A=float(b["closure_mm"])/float(a["closure_mm"]),
+        convergence_angle_deg=float(a["angle_deg"]),
+        slip_angle_deg=float(b["angle_deg"]),
+        angular_separation_mod180_deg=abs((float(a["angle_deg"])-float(b["angle_deg"])+90) % 180-90),
+        joint_yield_A_mpa=float(a["joint_yield_MPa"]),
+        joint_yield_B_mpa=float(b["joint_yield_MPa"]))
+
+
 def orientation(root, config_path, device):
     settings = json.loads(config_path.read_text(encoding="utf-8"))
     summaries, residual_rows, exterior_rows = [], [], []
@@ -163,24 +187,7 @@ def orientation(root, config_path, device):
                        ("wall_traction_rms_mpa", "interface_compliance", "interface_yield_max_mpa")})
         values["exterior_max_yield_mpa"] = max(max(row["max_matrix_yield_mpa"], row["max_joint_yield_mpa"])
                                                for row in exterior)
-        paths = read(source / "stress_paths.csv")
-        a, b = (next(row for row in paths if row["location"] == name and
-                     int(row["load_step"]) == settings["load_steps"])
-                for name in ("maximum_convergence", "maximum_slip"))
-        wall = [row for row in read(source / "wall_profiles.csv")
-                if int(row["load_step"]) == settings["load_steps"]]
-        summaries.append(dict(case=case["name"], joint_normal_deg=case["joint_normal_deg"],
-                              convergence_max_mm=float(a["closure_mm"]),
-                              convergence_mean_mm=float(np.mean([float(row["convergence_mm"]) for row in wall])),
-                              slip_max_percent=100*float(b["accumulated_slip_strain"]),
-                              convergence_at_slip_max_mm=float(b["closure_mm"]),
-                              convergence_ratio_B_A=float(b["closure_mm"])/float(a["closure_mm"]),
-                              convergence_angle_deg=float(a["angle_deg"]),
-                              slip_angle_deg=float(b["angle_deg"]),
-                              angular_separation_mod180_deg=abs((float(a["angle_deg"])-float(b["angle_deg"])+90) % 180-90),
-                              joint_yield_A_mpa=float(a["joint_yield_MPa"]),
-                              joint_yield_B_mpa=float(b["joint_yield_MPa"]),
-                              **values))
+        summaries.append(dict(orientation_response(source, case, settings["load_steps"]), **values))
     write_rows(root / "summary.csv", summaries)
     write_rows(root / "residuals.csv", residual_rows)
     write_rows(root / "exterior_yield.csv", exterior_rows)

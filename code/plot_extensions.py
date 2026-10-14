@@ -135,7 +135,7 @@ def interface_figure():
                     color=color, markerfacecolor="white", markersize=3.5, markeredgewidth=.9)
         ax.set(xlim=(-.35, 3.35), xticks=range(4))
         log_y(ax)
-        ax.set_xticklabels(["Uniform", "Material", "Wave", "Full"], rotation=25, ha="right")
+        ax.set_xticklabels([STYLES[metric][3] for metric in STYLES], rotation=25, ha="right")
     export(fig, "interface_metric_study", size,
            "Paired initial states and equal initial interface scale isolate the material and wavelength contributions to training and residual spectra.",
            ["results/interface_extension/summary.csv", "configs/interface_extension.json"],
@@ -196,13 +196,16 @@ def geometry_figure():
     for col, case in enumerate(cases):
         left = 13 + 43*col
         series = all_results[case["name"]]
-        title = ("Circular, $E_h/E_v=2.625$", "Circular, $E_h/E_v=5$", "Elliptical, $a_x/a_y=1.96$")[col]
+        title = ("Circular, $E_h/E_v=2.625$", "Circular, $E_h/E_v=5$", "Elliptical, $a_1/a_2=1.96$")[col]
         ax = axis(fig, (left, 122, 32, 32), f"({chr(97+col)})", "$x/a$", "$y/a$")
         artist = field_map(ax, series[0][1], case, norm)
         meshes.append(artist)
         ax.text(.5, 1.18, title, ha="center", transform=ax.transAxes, fontsize=7.4)
+        if col == 2:
+            ax.text(.5, 1.07, r"Major axis: $30^\circ$", ha="center",
+                    transform=ax.transAxes, fontsize=7.1)
 
-        for row, (bottom, ylabel, field) in enumerate(((82, "Convergence (mm)", "convergence"),
+        for row, (bottom, ylabel, field) in enumerate(((82, "Radial convergence (mm)", "convergence"),
                                                        (47, r"$\sigma_{tt}$ (MPa)", "stress"),
                                                        (12, r"Interface $u_r$ (mm)", "interface"))):
             ax = axis(fig, (left, bottom, 32, 25), f"({chr(100+3*row+col)})" +

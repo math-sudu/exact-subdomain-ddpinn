@@ -86,13 +86,18 @@ def prefix_cache(model, xy, stiffness, insitu, params):
     return cache
 
 
-def current_residuals(increment, cache, pts, stiffness, insitu, sf, params, step):
+def current_residuals(increment, cache, pts, stiffness, insitu, sf, params, step,
+                      *, projected_coefficients=None):
     xy = pts.xy_all
     if xy.shape != cache['xy'].shape or not torch.equal(xy, cache['xy']):
         raise ValueError('Prefix cache belongs to different coordinates; recompute history.')
     if not 1 <= step <= increment.total_steps:
         raise ValueError('Invalid physical loading step')
-    if isinstance(increment, IncrementFields):
+    if "increment_background" in cache:
+        (du, ds, gamma), derivatives = increment.spatial_fields(
+            xy, background_fields=cache["increment_background"],
+            grid=cache.get("increment_grid"), coefficients=projected_coefficients)
+    elif isinstance(increment, IncrementFields):
         (du, ds, gamma), derivatives = increment.spatial_fields(xy)
     else:
         # Functional parameter probes expose a callable rather than a module.

@@ -1,0 +1,22 @@
+{
+  "question": "How do aligned and crossed elastic bedding and weak-plane directions change local sliding and regional convergence during the same unloading path?",
+  "initialization_run": "results/e3/causal_path_load12_response_dual_v1",
+  "hidden": [64, 64, 64, 64],
+  "radius": 3.0,
+  "load_steps": 12,
+  "representation": "spectral",
+  "projection": {"radial_order": 32, "angular_modes": 64, "angular_samples": 256, "centrosymmetric": true},
+  "elastic_prefix": "circular",
+  "plastic_initialization": "corresponding_original_increment",
+  "quadrature": {"radial": 48, "angular": 256, "boundary": 1024, "stagger_angles": true, "radial_power": 1},
+  "weights": {"equilibrium": 3.285697128825039, "wall": 3.0928172158086884, "interface": 5.076251850402668, "constitutive": 5.703692056986043, "complementarity": 100.0, "gauge": 1.0},
+  "interface_metric": "compliance",
+  "interface_normalization": "Original exterior compliance norm, including 4*pi*R^2; used throughout all twelve increments.",
+  "lbfgs_evaluations_per_step": 4000,
+  "physics": {"matrix_cohesion_mpa": 2.0, "matrix_phi_deg": 32.5, "matrix_psi_deg": 2.5, "joint_cohesion_mpa": 0.2, "joint_phi_deg": 25.0, "joint_psi_deg": 0.0, "matrix_smoothing_mpa": 0.01, "joint_smoothing_mpa": 0.01, "complementarity_smoothing": 1e-8},
+  "cases": [
+    {"name": "bedding_oblique", "eh_over_ev": 2.625, "bedding_dip_deg": 45.0, "opening_axes": [1.0, 1.0], "opening_angle_deg": 0.0, "joint_normal_deg": 0.0},
+    {"name": "bedding_aligned", "eh_over_ev": 2.625, "bedding_dip_deg": 45.0, "opening_axes": [1.0, 1.0], "opening_angle_deg": 0.0, "joint_normal_deg": 135.0},
+    {"name": "bedding_crossed", "eh_over_ev": 2.625, "bedding_dip_deg": 45.0, "opening_axes": [1.0, 1.0], "opening_angle_deg": 0.0, "joint_normal_deg": 45.0}
+  ]
+}

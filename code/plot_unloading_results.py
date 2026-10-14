@@ -200,7 +200,7 @@ def displacement_figure(z, metadata, walls):
                 color=color, linewidth=.9, linestyle="--" if j else "-")
         ax.plot(*direction, color=color, marker=marker, markerfacecolor="white",
                 markersize=3, linestyle="none")
-        ax.annotate("A" if j == 0 else "B", direction, xytext=(-10, 7),
+        ax.annotate("A" if j == 0 else "B", direction, xytext=(-10, 7) if j == 0 else (7, -13),
                     textcoords="offset points", color=color, fontsize=8.5)
         meshes[-1].colorbar = meshes[0].colorbar
 
@@ -286,7 +286,7 @@ def wall_figure(z, metadata, walls):
     signed_cmap = matplotlib.colormaps["RdBu_r"].copy()
     signed_cmap.set_bad("#f2f2f2")
     signed_norm = SymLogNorm(linthresh=SLIP_LINEAR_CORE, linscale=.65,
-                            vmin=-.25, vmax=.25, base=10)
+                            vmin=-.35, vmax=.35, base=10)
     meshes = []
     panels = [
         ("b", 5, False, (57, 120, 30, 30)),
@@ -313,8 +313,8 @@ def wall_figure(z, metadata, walls):
                 zoom_box(ax, "c" if step == 5 else "f")
     cax = axes_mm(fig, (26, 74, 100, 2.3))
     bar = fig.colorbar(meshes[0], cax=cax, orientation="horizontal",
-                       ticks=[-.25, -.01, -.001, 0, .001, .01, .25])
-    bar.set_ticklabels(["−0.25", "−0.01", "−0.001", "0", "0.001", "0.01", "0.25"])
+                       ticks=[-.35, -.01, -.001, 0, .001, .01, .35])
+    bar.set_ticklabels(["−0.35", "−0.01", "−0.001", "0", "0.001", "0.01", "0.35"])
     bar.set_label(r"Signed slip $\gamma_j^p$ (%) · symmetric log", fontsize=8, labelpad=1)
     bar.ax.tick_params(labelsize=7.5, direction="in", length=2, pad=1.2)
     bar.minorticks_off()
@@ -325,9 +325,9 @@ def wall_figure(z, metadata, walls):
         (47, "(g)  Wall convergence", r"$c$ (mm)", "closure_mm", 1,
          [3, 6, 9, 12], (0, .34), [0, .15, .3]),
         (28, "(h)  Accumulated slip", r"$s_j^p$ (%)", "accumulated_slip_strain", 100,
-         [5, 8, 12], (-.01, .28), [0, .1, .2]),
+         [5, 8, 12], (-.01, .37), [0, .15, .3]),
         (9, "(i)  Signed slip", r"$\gamma_j^p$ (%)", "signed_slip_strain", 100,
-         [5, 8, 12], (-.27, .27), [-.25, 0, .25]),
+         [5, 8, 12], (-.37, .37), [-.3, 0, .3]),
     ]
     by_step = {}
     for step in {3, 5, 6, 8, 9, 12}:
@@ -365,7 +365,7 @@ def wall_figure(z, metadata, walls):
                     **{**style, "linestyle": "none", "zorder": 5})
             offset = (4, -9) if quantity == "closure_mm" and letter == "A" else (4, 3)
             if letter == "B":
-                offset = (-12, -10) if quantity == "accumulated_slip_strain" else (-12, 4)
+                offset = (6, -10)
             ax.annotate(letter, (loc["angle_deg"], value), xytext=offset,
                         textcoords="offset points", fontsize=8, color=style["color"])
         ax.legend(loc="lower right", bbox_to_anchor=(1, 1.005),
@@ -386,7 +386,7 @@ def wall_figure(z, metadata, walls):
          displacement_step=12, displacement_limits_mm=[0, .35],
          displacement_scale="linear", displacement_color_boundaries_mm=levels.tolist(),
          displacement_colormap="turbo", colormap_range=[.08, .95],
-         signed_field_steps=[5, 8, 12], signed_slip_limits_percent=[-.25, .25],
+         signed_field_steps=[5, 8, 12], signed_slip_limits_percent=[-.35, .35],
          signed_slip_scale="symmetric log, base 10", signed_slip_colormap="RdBu_r",
          signed_slip_linear_core_percent=SLIP_LINEAR_CORE,
          signed_slip_linscale=.65,

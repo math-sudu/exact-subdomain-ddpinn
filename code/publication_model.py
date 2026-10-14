@@ -12,7 +12,7 @@ def load_model(run, checkpoint=None, device="cpu"):
     saved = torch.load(checkpoint or run / "model.pt", map_location="cpu", weights_only=True)
     spec = saved["spec"]
     with torch.random.fork_rng(devices=[]):
-        model = make_causal_model(dict(spec, radius=spec["input_scale"]), saved["c"])
+        model = make_causal_model(dict(spec, radius=spec["input_scale"]), saved["c"], spec.get("case"))
         for _ in range(saved["load_step"]):
             model.append_increment(copy_previous=False)
     model.load_state_dict(saved["model"], strict=True)

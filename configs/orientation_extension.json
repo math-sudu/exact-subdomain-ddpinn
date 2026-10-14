@@ -1,22 +1,24 @@
 {
-  "question": "How do aligned and crossed elastic bedding and weak-plane directions change local sliding and regional convergence during the same unloading path?",
-  "initialization_run": "results/initialization",
+  "question": "Solve the actual causal neural displacement with exact local zero-dilation weak-plane return, retaining the elastic prefix and exact exterior. Assess spatial equilibrium, boundary tractions and fixed gauges before accepting each plastic increment.",
   "hidden": [
     64,
     64,
     64,
     64
   ],
-  "radius": 3.0,
+  "radius": 3,
   "load_steps": 12,
   "representation": "spectral",
+  "constitutive_update": "joint_return",
+  "equilibrium_form": "virtual_work",
   "projection": {
     "radial_order": 32,
     "angular_modes": 64,
-    "angular_samples": 256
+    "angular_samples": 256,
+    "centrosymmetric": true
   },
-  "reuse_inactive_elastic_prefix": true,
-  "plastic_initialization": "corresponding_original_increment",
+  "elastic_prefix": "circular",
+  "plastic_initialization": "preceding_trained_increment",
   "quadrature": {
     "radial": 48,
     "angular": 256,
@@ -29,19 +31,24 @@
     "wall": 3.0928172158086884,
     "interface": 5.076251850402668,
     "constitutive": 5.703692056986043,
-    "complementarity": 100.0,
-    "gauge": 1.0
+    "complementarity": 100,
+    "gauge": 1,
+    "virtual_work": 25.132741228718345
   },
   "interface_metric": "compliance",
-  "interface_normalization": "Original exterior compliance norm, including 4*pi*R^2; used throughout all twelve increments.",
-  "lbfgs_evaluations_per_step": 4000,
+  "trust_region": {
+    "evaluations_per_solve": 12,
+    "linear_iterations": 600,
+    "polish_evaluations": 0,
+    "gradient_reduction": 0.1
+  },
   "physics": {
-    "matrix_cohesion_mpa": 2.0,
+    "matrix_cohesion_mpa": 2,
     "matrix_phi_deg": 32.5,
     "matrix_psi_deg": 2.5,
     "joint_cohesion_mpa": 0.2,
-    "joint_phi_deg": 25.0,
-    "joint_psi_deg": 0.0,
+    "joint_phi_deg": 25,
+    "joint_psi_deg": 0,
     "matrix_smoothing_mpa": 0.01,
     "joint_smoothing_mpa": 0.01,
     "complementarity_smoothing": 1e-08
@@ -50,35 +57,35 @@
     {
       "name": "bedding_oblique",
       "eh_over_ev": 2.625,
-      "bedding_dip_deg": 45.0,
+      "bedding_dip_deg": 45,
       "opening_axes": [
-        1.0,
-        1.0
+        1,
+        1
       ],
-      "opening_angle_deg": 0.0,
-      "joint_normal_deg": 0.0
+      "opening_angle_deg": 0,
+      "joint_normal_deg": 0
     },
     {
       "name": "bedding_aligned",
       "eh_over_ev": 2.625,
-      "bedding_dip_deg": 45.0,
+      "bedding_dip_deg": 45,
       "opening_axes": [
-        1.0,
-        1.0
+        1,
+        1
       ],
-      "opening_angle_deg": 0.0,
-      "joint_normal_deg": 135.0
+      "opening_angle_deg": 0,
+      "joint_normal_deg": 135
     },
     {
       "name": "bedding_crossed",
       "eh_over_ev": 2.625,
-      "bedding_dip_deg": 45.0,
+      "bedding_dip_deg": 45,
       "opening_axes": [
-        1.0,
-        1.0
+        1,
+        1
       ],
-      "opening_angle_deg": 0.0,
-      "joint_normal_deg": 45.0
+      "opening_angle_deg": 0,
+      "joint_normal_deg": 45
     }
   ]
 }
