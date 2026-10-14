@@ -137,8 +137,9 @@ strains to fixed endpoint gauges. `sources/common_regions.csv` and the
 `common_region_*` NPZ arrays use the same global side (`|x|>|y|`) and top/bottom
 (`|y|>|x|`) sectors in every orientation. They include each source's signed
 contribution and accumulated joint-slip activity at all twelve load steps.
-The orientation figure uses these common sectors, with final slip-field
-insets linking each region to its contribution curve.
+The six-panel orientation figure uses these common sectors, with enlarged
+final slip-field insets linking each region to its contribution curve.
+The insets retain bedding and weak-plane directions and share one colorbar.
 The crossed final vertical source difference of about -0.00312 mm is
 predominantly the endpoint projection of weak-equilibrium residual; its
 source increments and direct nonelastic increments therefore remain distinct.
