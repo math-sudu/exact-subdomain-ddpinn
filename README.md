@@ -1,17 +1,22 @@
-# Exact exterior coupling for an excavation PINN
+# Operator-embedded spectral PINN for tunnel unloading
 
-Code and final data for **Physics-informed modeling of anisotropic excavation
-with exact exterior coupling and spatial loading histories**.
+Code and final data for **Anisotropic elastoplastic deformation during tunnel
+unloading using an operator-embedded spectral PINN**.
 <!-- BEGIN_IDENTIFIED -->
 by Pengcheng Zhu and Tielin Chen.
 <!-- END_IDENTIFIED -->
 
-The model couples spatial displacement increments to a fixed differentiable
-anisotropic elastic exterior. A local zero-dilation weak-plane return supplies
-stress and plastic-strain histories, and a virtual-work residual enforces
-equilibrium. The exterior compliance defines the interface residual metric.
-The matrix is anisotropic elastic; plastic strain comes from weak-plane slip. Material parameters
-and loads define computational scenarios; they are not calibrated observations.
+The model describes small-strain plane-strain elastoplastic deformation during
+tunnel wall traction release. A fixed anisotropic exterior operator enters
+differentiable PINN training, and a Chebyshev--Fourier projection retains
+spatial displacement increments and their derivatives. A local zero-dilation
+weak-plane return supplies stress and plastic-strain histories, while
+virtual work enforces equilibrium. Exterior compliance defines the interface
+residual metric. The results connect the anisotropic elastic background and
+evolving plastic shear to section shortening and finite-span radial deformation.
+Weak-plane slip is represented by continuum plastic shear strain in a
+continuous displacement field. Material parameters and loads define prescribed
+computational scenarios.
 
 ## Contents
 
@@ -123,6 +128,7 @@ python code/extract_radial_kinematics.py
 python code/plot_unloading_results.py --figure displacement
 python code/plot_unloading_results.py --figure wall
 python code/analyze_unloading_history.py
+python code/extract_kinematics_figure.py
 python code/analyze_gauge_sources.py --root results/orientation_extension --cases bedding_oblique bedding_aligned bedding_crossed --steps 1 2 3 4 5 6 7 8 9 10 11 12 --output results/history_analysis/sources
 python code/plot_history_analysis.py
 ```
@@ -135,8 +141,12 @@ from Git.
 The displacement figure uses vector increments before taking their magnitude.
 The plotting entry points accept `--data` and `--figure-directory` for
 separate figure variants with the same panels.
-The whole-space figure combines stress paths and signed radial accumulation
-along fixed rays. The compact
+The whole-space figure locates the fixed stress paths on the final radial-strain
+field, with a native-grid B-sector detail, A/B radial profiles, cumulative
+deformation through the exact exterior, and the near-wall sign reversal.
+`extract_kinematics_figure.py` samples derivatives of the completed displacement
+history and its coupled exterior; it also reads the common elastic background
+at the two wall locations. The compact
 `radial_contributions.csv` contains all twelve states at both locations.
 The source analysis keeps signed contributions of actual stepwise plastic
 strains to fixed endpoint gauges. `sources/common_regions.csv` and the
