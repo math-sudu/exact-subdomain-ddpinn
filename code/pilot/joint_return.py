@@ -1,7 +1,7 @@
 """Exact local return for the rounded, zero-dilation weak-plane branch.
 
 This eliminates the local stress/multiplier equations at a supplied strain.
-The caller must check the matrix yield and solve the coupled boundary problem.
+The caller must solve the coupled boundary problem and check the spatial return.
 """
 
 import numpy as np
@@ -19,6 +19,8 @@ def joint_return(trial_stress, stiffness, params, *, check_branch=True):
     trial's shear branch gives kappa=(tau_trial-tau)/k and gamma=kappa/alpha.
     All spatial/parameter derivatives pass through this piecewise exact map.
     """
+    if check_branch and not torch.isfinite(trial_stress).all():
+        raise FloatingPointError("Nonfinite trial stress in weak-plane return")
     if params.joint_psi_deg != 0:
         raise ValueError("This return map requires zero weak-plane dilation")
     normal, shear = P._joint_geometry(params, trial_stress)
@@ -36,10 +38,13 @@ def joint_return(trial_stress, stiffness, params, *, check_branch=True):
     h = torch.where(active, h, torch.ones_like(h)*(1+epsilon))
     discriminant = h.square()-(1-a.square())*epsilon**2
     # Spatial vmap/JVP callers validate the untransformed field separately.
-    if check_branch and torch.any(active & (h <= epsilon)):
+    unsupported = active & (h <= epsilon)
+    if check_branch and torch.any(unsupported):
         raise ValueError("Shear return reached the rounded apex; another branch is required")
     sign = torch.where(tau_trial < 0, -1., 1.)
     tau = (-a*h+sign*discriminant.sqrt())/(1-a.square())
+    # Differentiated trial residuals must also reject unsupported finite roots.
+    tau = torch.where(unsupported, torch.full_like(tau, torch.nan), tau)
     kappa = torch.where(active, (tau_trial-tau)/k, torch.zeros_like(tau))
     stress = trial_stress-kappa[..., None]*cq
     returned_tau = stress@shear

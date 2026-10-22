@@ -1,4 +1,4 @@
-"""Completed nonlinear histories used by the current manuscript."""
+"""Reference twelve-step histories used in the manuscript's unloading study."""
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]

@@ -375,16 +375,12 @@ def orientation_figure(directory, config_path):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--figure", choices=("interface", "geometry", "orientation", "all"), default="all")
-    parser.add_argument("--orientation-data", type=Path, default=ROOT / "results/orientation_extension")
-    parser.add_argument("--orientation-config", type=Path, default=ROOT / "configs/orientation_extension.json")
+    parser.add_argument("--figure", choices=("interface", "geometry", "all"), default="all")
     args = parser.parse_args()
     if args.figure in ("interface", "all"):
         interface_figure()
     if args.figure in ("geometry", "all"):
         geometry_figure()
-    if args.figure in ("orientation", "all"):
-        orientation_figure(args.orientation_data.resolve(), args.orientation_config.resolve())
 
 
 if __name__ == "__main__":

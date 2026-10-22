@@ -170,11 +170,11 @@ def orientation_response(source, case, load_steps):
         joint_yield_B_mpa=float(b["joint_yield_MPa"]))
 
 
-def orientation(root, config_path, device):
+def orientation(root, config_path, device, histories=None):
     settings = json.loads(config_path.read_text(encoding="utf-8"))
     summaries, residual_rows, exterior_rows = [], [], []
     for case in settings["cases"]:
-        source = root / case["name"]
+        source = histories[case["name"]] if histories is not None else root / case["name"]
         residuals = orientation_history_residuals(source / "model.pt", device)
         residual_rows.extend(residuals)
         exterior = exterior_yield_rows(source / "model.pt", device)
@@ -199,14 +199,20 @@ def main():
     parser.add_argument("--study", choices=("elastic", "orientation", "all"), default="all")
     parser.add_argument("--threads", type=int, default=1)
     parser.add_argument("--device", default="cpu")
-    parser.add_argument("--orientation-data", type=Path, default=ROOT / "results/orientation_extension")
+    parser.add_argument("--orientation-data", type=Path,
+                        help="Alternative history root; defaults to the manuscript's selected histories.")
+    parser.add_argument("--orientation-output", type=Path, default=ROOT / "results/history_analysis")
     parser.add_argument("--orientation-config", type=Path, default=ROOT / "configs/orientation_extension.json")
     args = parser.parse_args()
     torch.set_num_threads(args.threads)
     if args.study in ("elastic", "all"):
         elastic()
     if args.study in ("orientation", "all"):
-        orientation(args.orientation_data.resolve(), args.orientation_config.resolve(), args.device)
+        from current_histories import HISTORIES
+        destination = (args.orientation_data or args.orientation_output).resolve()
+        destination.mkdir(parents=True, exist_ok=True)
+        orientation(destination, args.orientation_config.resolve(), args.device,
+                    histories=HISTORIES if args.orientation_data is None else None)
 
 
 if __name__ == "__main__":

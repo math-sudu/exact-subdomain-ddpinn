@@ -1,0 +1,82 @@
+{
+  "checkpoint": "results/controlled_history/parallel_preceding/model.pt",
+  "completed_steps": 11,
+  "pending_step": 12,
+  "displacement_space": {
+    "radial_order": 48,
+    "angular_modes": 80,
+    "angular_samples": 320,
+    "centrosymmetric": true
+  },
+  "test_space": {
+    "radial_order": 64,
+    "angular_modes": 112
+  },
+  "integration": {
+    "radial": 128,
+    "angular": 768
+  },
+  "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+  "rows": [
+    {
+      "load_step": 3,
+      "residual_dual_norm": 0.0005632953257988727,
+      "source_dual_norm": 0.00028510731640578443,
+      "relative_residual_to_source": 1.9757308682922463
+    },
+    {
+      "load_step": 4,
+      "residual_dual_norm": 0.00159711827351876,
+      "source_dual_norm": 0.03840498072885176,
+      "relative_residual_to_source": 0.04158622770298447
+    },
+    {
+      "load_step": 5,
+      "residual_dual_norm": 0.002045837138625668,
+      "source_dual_norm": 0.1238245695393162,
+      "relative_residual_to_source": 0.01652206138278626
+    },
+    {
+      "load_step": 6,
+      "residual_dual_norm": 0.004160416761904884,
+      "source_dual_norm": 0.23942206009495864,
+      "relative_residual_to_source": 0.017376914893534854
+    },
+    {
+      "load_step": 7,
+      "residual_dual_norm": 0.006670899542178711,
+      "source_dual_norm": 0.4027200115559226,
+      "relative_residual_to_source": 0.01656460903545732
+    },
+    {
+      "load_step": 8,
+      "residual_dual_norm": 0.012841093812377196,
+      "source_dual_norm": 0.5867937649245436,
+      "relative_residual_to_source": 0.021883487146507844
+    },
+    {
+      "load_step": 9,
+      "residual_dual_norm": 0.023682708596661897,
+      "source_dual_norm": 0.8336380374859592,
+      "relative_residual_to_source": 0.028408862757849842
+    },
+    {
+      "load_step": 10,
+      "residual_dual_norm": 0.021828073949544915,
+      "source_dual_norm": 1.0489953066415085,
+      "relative_residual_to_source": 0.02080855253721798
+    },
+    {
+      "load_step": 11,
+      "residual_dual_norm": 0.02957348960574934,
+      "source_dual_norm": 1.293707716687013,
+      "relative_residual_to_source": 0.02285948303800994
+    },
+    {
+      "load_step": 12,
+      "residual_dual_norm": 0.036868574560274994,
+      "source_dual_norm": 1.5615834406316869,
+      "relative_residual_to_source": 0.023609737143063605
+    }
+  ]
+}

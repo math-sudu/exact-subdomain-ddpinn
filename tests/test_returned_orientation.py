@@ -267,3 +267,25 @@ def test_neural_column_scaling_keeps_exact_null_directions_finite():
     value, reverse = torch.func.vjp(lambda x: torch.stack((2*x[0], x[1]*0)), point)
     scale = column_scale(reverse, value, point)
     torch.testing.assert_close(scale, point.new_tensor([.5, 1.]))
+
+
+def test_resumed_solve_refreshes_scale_after_hidden_features_activate():
+    model, saved, params = fixture()
+    saved["settings"]["equilibrium_form"] = "virtual_work"
+    problem = ReturnedOrientationResidual(model, saved, params)
+    problem.current.requires_grad_(True)
+    with torch.no_grad():
+        problem.current.kinematic_head.weight.zero_()
+    controls = dict(linear_iterations=20, evaluations_per_solve=1,
+                    polish_evaluations=0, gradient_reduction=.1)
+    state = {}
+    neural_primal_step(problem, controls, state)
+    target = state["gradient_tolerance"]
+    first_layer_size = problem.current.kinematic_trunk[0].weight.numel()
+    torch.testing.assert_close(state["scale"][:first_layer_size],
+                               torch.ones(first_layer_size, dtype=torch.float64))
+    with torch.no_grad():
+        problem.current.kinematic_head.weight[:2].normal_(std=.001)
+    neural_primal_step(problem, controls, state)
+    assert not torch.all(state["scale"][:first_layer_size] == 1)
+    assert state["gradient_tolerance"] == target

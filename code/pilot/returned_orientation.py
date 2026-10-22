@@ -104,6 +104,23 @@ class ReturnedOrientationResidual(OrientationResidual):
         h, r = self.fields(coefficients, equilibrium=self.equilibrium_form == "strong")
         return self.weighted_blocks(coefficients, h, r)
 
+    @torch.no_grad()
+    def scale_initial_correction(self, current):
+        """Find a supported predictor along both directions of its correction."""
+        original = current.coefficients().clone()
+        positive = [2.**-k for k in range(9)]
+        for factor in positive + [0.] + [-value for value in positive]:
+            coefficients = original.clone()
+            coefficients[..., :2] *= factor
+            fields, _ = self.fields(coefficients, equilibrium=False)
+            if torch.isfinite(fields["stress_total"]).all():
+                current.kinematic_head.weight[:2].mul_(factor)
+                current.kinematic_head.bias[:2].mul_(factor)
+                current.background_subtraction[..., :2, :].mul_(factor)
+                current._coefficient_cache = None
+                return factor
+        raise ValueError("No supported initial return in either direction of the transferred correction; the history or predictor must change")
+
     def fields(self, coefficients, *, equilibrium=True):
         grid = self.cache["increment_grid"](coefficients[..., :2], second=equilibrium)
         values, gradient = grid[:2]

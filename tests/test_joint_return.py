@@ -75,3 +75,8 @@ def test_joint_return_rejects_unsupported_flow_and_apex_branches():
                      replace(params, joint_psi_deg=5.))
     with pytest.raises(ValueError, match="rounded apex"):
         joint_return(stiffness.new_tensor([2., 0., 0., 0.]), stiffness, params)
+    unsupported = stiffness.new_tensor([2., 0., 0., 0.])
+    result = joint_return(unsupported, stiffness, params, check_branch=False)
+    assert not torch.isfinite(result["stress"]).all()
+    with pytest.raises(FloatingPointError, match="Nonfinite trial stress"):
+        joint_return(torch.full_like(unsupported, torch.nan), stiffness, params)

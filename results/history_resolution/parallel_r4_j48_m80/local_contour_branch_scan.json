@@ -1,0 +1,90 @@
+{
+  "checkpoint": "final_guarded_candidate.pt",
+  "meaning": "Failure of the first step-12 candidate on the fixed contour; the subsequent contour_guarded_candidate.pt supplies model.pt.",
+  "rows": [
+    {
+      "step": 1,
+      "minimum_h": 0.42579710022218537,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 2,
+      "minimum_h": 0.3968634568281218,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 3,
+      "minimum_h": 0.3679317130293601,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 4,
+      "minimum_h": 0.3390541443953172,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 5,
+      "minimum_h": 0.30992834006931413,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 6,
+      "minimum_h": 0.2812458589177344,
+      "radius": 1.0001133375687243,
+      "theta": 137.99453125,
+      "bad_points": 0
+    },
+    {
+      "step": 7,
+      "minimum_h": 0.2517333215177663,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 8,
+      "minimum_h": 0.22266721189171626,
+      "radius": 1.0,
+      "theta": 137.99540681026434,
+      "bad_points": 0
+    },
+    {
+      "step": 9,
+      "minimum_h": 0.1896177921628515,
+      "radius": 1.0036615374560527,
+      "theta": 137.99453125,
+      "bad_points": 0
+    },
+    {
+      "step": 10,
+      "minimum_h": 0.13357251784984558,
+      "radius": 1.005162335597542,
+      "theta": 137.99453125,
+      "bad_points": 0
+    },
+    {
+      "step": 11,
+      "minimum_h": 0.07595494090815248,
+      "radius": 1.004634855829912,
+      "theta": 137.99453125,
+      "bad_points": 0
+    },
+    {
+      "step": 12,
+      "minimum_h": 0.0042995292957868775,
+      "radius": 1.004634855829912,
+      "theta": 137.99453125,
+      "bad_points": 2
+    }
+  ]
+}

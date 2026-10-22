@@ -36,13 +36,83 @@ computational scenarios.
   (mixed onsets for oblique/parallel and a trained 3a history for perpendicular).
 - `results/history_analysis/`: fixed gauges, slip sectors and signed regional
   source integrals for the three completed histories.
+- `results/history_resolution/`: coupled domain, spatial and load-step
+  experiments, their settings and trajectories, and independent response,
+  weak-balance and exterior-yield checks against the reference histories.
+- `results/controlled_history/`: parallel 4a paths solved from
+  the first plastic increment with two predictors and common physical
+  acceptance checks; saved records identify accepted and pending increments.
+- `results/tensile_history/`: source partitions by end-of-increment normal
+  stress, including separate positive and negative gauge work.
+- `results/late_step_continuation/`: pending final-increment sensitivity
+  states on identical saved prefixes and their comparisons.
 - `results/unloading/`: small load-summary and fixed-location response tables,
   with the units and grid definitions used by the field exporter.
 - `tests/`: checks of the interface residual and strain-output conventions.
 
-The twelve load states describe the reported physical loading history.
+The reference histories use twelve load states; the load-step studies use 24.
 Full field grids and wall profiles are generated locally from these weights.
 The paired studies also supply their training trajectories.
+
+The current parallel result is
+`results/controlled_history/parallel_source_final/adopted/model.pt`, with
+matching settings, trajectory and response tables in the same directory.
+It uses a 4a interface, projection (48,80) and twelve increments. Horizontal
+and vertical total shortenings are 0.10792587 and 0.53167376 mm; plastic
+sources are -0.03190980 and +0.07168952 mm. The saved final increment retains
+its actual wall/weak residual flags. Other states in the parent directory
+are optimization experiments. Reconstruct the selected response with:
+
+```bash
+python code/summarize_history_study.py results/controlled_history/parallel_source_final/adopted/model.pt --output results/reconstructed_parallel --include-pending
+```
+
+The standalone reference selector is `code/current_histories.py`: all three
+reference checkpoints are under `results/orientation_extension/<case>/`.
+The project paths `orientation_return/` and `orientation_expanded/` retained
+inside historical diagnostic records map to those same reference states.
+Each reference's saved initializer is supplied under
+`results/orientation_initialization/<case>/model.pt`. The six subsequent
+studies keep their names under `results/history_resolution/`: `parallel_r4`,
+`parallel_r4_j48_m80`, `oblique_j40_m80`, `oblique_n24`,
+`perpendicular_j48_m80`, and `perpendicular_n24`.
+
+The initializer and settings of those six studies are:
+
+| Study directory | Input checkpoint directory | R/a; J, M; volume quadrature; increments |
+| --- | --- | --- |
+| `parallel_r4` | `orientation_extension/bedding_aligned` | 4; 40, 64; 64 by 256; 12 |
+| `parallel_r4_j48_m80` | `history_resolution/parallel_r4` | 4; 48, 80; 96 by 512; 12 |
+| `oblique_j40_m80` | `orientation_extension/bedding_oblique` | 3; 40, 80; 64 by 320; 12 |
+| `oblique_n24` | `orientation_extension/bedding_oblique` | 3; 32, 64; 48 by 256; 24 |
+| `perpendicular_j48_m80` | `orientation_extension/bedding_crossed` | 4; 48, 80; 96 by 512; 12 |
+| `perpendicular_n24` | `orientation_extension/bedding_crossed` | 4; 40, 64; 96 by 512; 24 |
+
+All input directories in the table are relative to `results/` and contain
+`model.pt`. The spatially refined parallel and perpendicular directories also
+supply the pending and constrained-head states for steps 11 and 12. Their
+`constrained_head_solves` metadata specifies the actual constraint regions,
+margin floor and optimization outcome. The final `model.pt` in each directory
+is the complete history used for its reported response table.
+
+Use `code/recompute_orientation_history.py --source <reference-model>
+--output <new-directory> --through-step <N>` with the domain, projection,
+quadrature and load-step arguments shown by `--help` to resolve a changed
+history. Only the exact elastic prefix is accepted from the source; the
+remaining increments are solved with their newly accumulated histories.
+`code/summarize_history_study.py` produces the response and exterior readouts;
+`code/assess_history_resolution.py` produces the weak-test and local-force
+checks. The small endpoint/source discrepancy measures the selected functional,
+and the weak residual is not an elastoplastic field-error bound.
+
+`code/refine_returned_head.py` applies the documented constrained recovery
+of the existing displacement head. Its independent source grid and explicit
+local constraint regions address unsupported return queries found during
+assessment. The pending inputs, earlier states and branch assessments are
+retained in the corresponding history-resolution directory. The output stays
+pending until its independent history queries have been assessed; optimizer
+success alone is not a field-accuracy criterion. Final summaries retain the
+solve counts, source-predictor restarts and constrained recovery results.
 
 ## Extended studies
 
@@ -105,6 +175,72 @@ next increment. This explicit staging preserves the reported training procedure;
 the gradient-reduction setting is an optimization control. Final checkpoints and
 their trajectories are supplied so field reconstruction requires no training.
 
+## Full-history optimization experiment
+
+The parallel 4a experiment fixes the twelve increments, material, projection
+and quadrature, and changes the displacement predictors. To reconstruct its
+endpoint, regional-source and exterior checks from the retained weights:
+
+```bash
+python code/summarize_history_study.py results/controlled_history/parallel_source/model.pt --output results/reconstructed_source --include-pending
+python code/summarize_history_study.py results/controlled_history/parallel_preceding/model.pt --output results/reconstructed_preceding --include-pending
+```
+
+To solve both histories again in new directories:
+
+```bash
+python code/resolve_controlled_history.py --source results/history_resolution/parallel_r4_j48_m80/model.pt --output results/recomputed_source --predictor source --weak-load-scale '1.6358928798171821'
+python code/resolve_controlled_history.py --source results/history_resolution/parallel_r4_j48_m80/model.pt --output results/recomputed_preceding --predictor preceding --onset-scale 0.5 --weak-load-scale '1.6358928798171821'
+```
+
+Each run starts from the exact elastic prefix and re-solves every plastic
+increment. `control.json` records the fixed physical acceptance targets;
+`physical_history.json` records each block's independent responses, actual
+residuals and acceptance decision. Optimizer status alone never freezes a
+step. A failed physical check leaves that increment pending. The same command
+resumes it with its saved preceding history. Source predictors use the
+supplied final checkpoint as displacement guesses, so its weights are a
+required input to these specific experiments.
+An unaccepted full-release state can be assessed with `--include-pending`
+in the history, weak-residual and tensile readers. This reads its actual
+constitutive history without accepting the increment. The supplied
+`comparison.json` retains each final state's failed targets. Both supplied
+paths accept increments 3--11 and retain increment 12 as pending: their
+final wall and weak residuals exceed the common targets. Their source
+differences are 6.7% horizontally and 2.4% vertically. The source path's
+separate `step12_head.pt` is an unadopted diagnostic, not its final model.
+`--polish-evaluations 240` enables an additional bounded scaled L-BFGS
+stage after a trust-region block exhausts its evaluation budget; the
+physical targets remain unchanged.
+When the independent weak test alone remains above target after the response
+and boundary checks pass, the runner includes those (56,96) tests in the
+training work metric. Displacement coefficients are zero-extended; the
+(48,80) displacement projection and all material parameters are unchanged.
+If the frozen-source projection floor already exceeds the weak target,
+enrichment proceeds before response stabilization once the branch, boundary
+and gauge checks pass. Waiting for the original tests to stabilize cannot
+remove that unresolved component at the assessed source.
+`work_test_enrichment` survives subsequent checkpoint saves and records the
+activation increment and the old/new test spaces. For the two supplied
+histories, the lost event was recovered from the saved physical assessments:
+both enrich at step 10. `first_recorded_evaluations` identifies the first
+surviving assessment using that space, rather than an exact activation count.
+Earlier accepted increments remain fixed.
+The `independent_weak.json` records cover every plastic increment with
+(64,112) tests and 128-by-768 integration, outside training and acceptance.
+`comparison.json` joins the weak tests to the corresponding sources and
+acceptance states. Reconstruct this check with:
+
+```bash
+python code/assess_history_resolution.py results/controlled_history/parallel_source/model.pt --output results/reconstructed_source/independent_weak.json --steps 3 4 5 6 7 8 9 10 11 12 --radial-order 64 --angular-modes 112 --radial-quadrature 128 --angular-quadrature 768 --include-pending
+python code/assess_tensile_history.py results/controlled_history/parallel_source/model.pt --output results/reconstructed_source/tensile --include-pending
+```
+
+Use `parallel_preceding/model.pt` for the second history. The tensile labels
+assign each plastic increment by its returned normal stress at that increment's
+end. `code/summarize_controlled_history.py` reads the supplied per-history
+readouts and regenerates `results/controlled_history/comparison.json`.
+
 ## Installation
 
 Use Python 3.11 or newer. The reference environment uses PyTorch 2.8.0; field
@@ -156,7 +292,7 @@ contribution and accumulated joint-slip activity at all twelve load steps.
 The six-panel orientation figure uses these common sectors, with enlarged
 final slip-field insets linking each region to its contribution curve.
 The insets retain bedding and weak-plane directions and share one colorbar.
-The perpendicular history gives 0.513745 mm vertical shortening and
+The reference perpendicular history gives 0.513745 mm vertical shortening and
 0.054013 mm vertical plastic source; the common elastic part is 0.460184 mm.
 Side and top/bottom sectors contribute 0.045018 and 0.008995 mm, respectively.
 The slip insets query the common a<r<3a window even when the computational

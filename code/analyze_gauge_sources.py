@@ -18,7 +18,7 @@ from decompose_eigenstrain_response import plastic_sources
 from pilot import config as C
 from pilot.elastic_background import CircularElasticIncrement
 from pilot.gauge_influence import CircularGaugeInfluence
-from pilot.spectral_mixed import load_orientation_model
+from pilot.spectral_mixed import ReturnedCausalPINN, load_orientation_model
 from publication_model import write_rows
 
 
@@ -146,7 +146,9 @@ def analyze_checkpoint(checkpoint, steps, angles=(0., 90., 104.), *,
             arrays[f"angular_density_{name}_mm"])
 
     endpoint_xy = like.new_tensor(endpoints.reshape(-1, 2))
-    retained = model(endpoint_xy)[0][:, steps - 1].cpu().numpy().reshape(len(angles), 2, len(steps), 2)
+    endpoint_history = (model.returned_history(endpoint_xy)
+                        if isinstance(model, ReturnedCausalPINN) else model(endpoint_xy))
+    retained = endpoint_history[0][:, steps - 1].cpu().numpy().reshape(len(angles), 2, len(steps), 2)
     arrays["retained_mm"] = -np.einsum("gkc,gc->gk", retained[:, 1] - retained[:, 0], directions) * C.U_REF * 1000
     elastic = elastic_field(endpoint_xy)[0].cpu().numpy().reshape(len(angles), 2, 2)
     elastic_gauge = -np.einsum("gc,gc->g", elastic[:, 1] - elastic[:, 0], directions)

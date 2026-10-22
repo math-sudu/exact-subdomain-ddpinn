@@ -140,8 +140,16 @@ def plastic_sources(bundle, model, operator, steps):
     activity = []
     _, shear_projection = P._joint_geometry(bundle["params"], model.multiplier_scale)
     shear_projection = shear_projection * shear_projection.new_tensor([2., 2., 1., 1.])
-    for chunk in np.array_split(xy, max(1, int(np.ceil(len(xy) / 1024)))):
-        _, stress, multipliers = model(model.multiplier_scale.new_tensor(chunk))
+    from pilot.spectral_mixed import CircularGridEvaluation, ReturnedCausalPINN
+    returned_model = isinstance(model, ReturnedCausalPINN)
+    chunk_size = max(operator.nt, (8192 // operator.nt) * operator.nt) if returned_model else 1024
+    for start in range(0, len(xy), chunk_size):
+        points = model.multiplier_scale.new_tensor(xy[start:start+chunk_size])
+        if returned_model:
+            grid = CircularGridEvaluation(model.increments[0], (points.reshape(-1, operator.nt, 2),))
+            _, stress, multipliers, _ = model.returned_history(points, grid=grid)
+        else:
+            _, stress, multipliers = model(points)
         total = stress + bundle["s0"].to(stress)
         joint_increment = multipliers[..., 1:] * P.joint_flow_direction(total, bundle["params"])
         accumulated_slip = (joint_increment @ shear_projection).abs().cumsum(1)

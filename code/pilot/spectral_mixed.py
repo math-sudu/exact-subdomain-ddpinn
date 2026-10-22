@@ -238,16 +238,19 @@ class SpectralIncrementFields(IncrementFields):
 
 
 class SpectralCausalPINN(CausalMixedPINN):
-    def __init__(self, hidden, input_scale, total_steps, stiffness, projection, elastic_case=None):
+    def __init__(self, hidden, input_scale, total_steps, stiffness, projection, elastic_case=None,
+                 increment_hidden=None):
         super().__init__(hidden, input_scale, total_steps, stiffness)
         self.projection = dict(projection)
         self.elastic_case = elastic_case
+        self.increment_hidden = increment_hidden or {}
 
     def make_increment(self):
         from .elastic_background import CircularElasticIncrement
         background = (None if self.elastic_case is None else
                       CircularElasticIncrement(self.elastic_case, self.total_steps, self.multiplier_scale))
-        return SpectralIncrementFields(self.hidden, self.input_scale, self.total_steps,
+        hidden = self.increment_hidden.get(str(self.n_steps + 1), self.hidden)
+        return SpectralIncrementFields(hidden, self.input_scale, self.total_steps,
                                        self.multiplier_scale, **self.projection,
                                        elastic_background=background).to(self.multiplier_scale)
 
@@ -269,26 +272,36 @@ class ReturnedCausalPINN(SpectralCausalPINN):
         self.register_buffer("return_insitu", insitu.detach().clone())
         self.return_params = params
 
-    def returned_history(self, xy):
+    def returned_history(self, xy, *, check_branch=True, grid=None):
+        """Replay every local return; reject an unsupported path by default.
+
+        Displacement-only evaluation of individual increments is kinematic.
+        Use this entry point when claiming a valid constitutive history at xy.
+        check_branch=False supports transformed training calls; unsupported
+        active returns remain nonfinite and cannot serve as valid field data.
+        """
         from .joint_return import joint_return
         displacement = xy.new_zeros((len(xy), 2))
         strain = plastic = xy.new_zeros((len(xy), 4))
         rows = []
+        background = (self.increments[0].elastic_background.spatial_fields(xy)
+                      if grid is not None else None)
         for increment in self.increments:
-            values, derivatives = increment.spatial_fields(xy)
+            values, derivatives = increment.spatial_fields(xy, background, grid=grid)
             du = derivatives[0]
             displacement = displacement+values[0]
             strain = strain+torch.stack((du[0, :, 0], du[1, :, 1],
                 torch.zeros_like(du[0, :, 0]), du[1, :, 0]+du[0, :, 1]), -1)
             returned = joint_return(self.return_insitu+(strain-plastic)@self.return_stiffness.T,
-                                    self.return_stiffness, self.return_params, check_branch=False)
+                                    self.return_stiffness, self.return_params, check_branch=check_branch)
             plastic = plastic+returned["plastic"]
             gamma = torch.stack((torch.zeros_like(returned["gamma"]), returned["gamma"]), -1)
             rows.append((displacement, returned["stress"]-self.return_insitu, gamma, plastic))
         return tuple(torch.stack([row[i] for row in rows], dim=1) for i in range(4))
 
     def forward(self, xy):
-        return self.returned_history(xy)[:3]
+        # vmap/JVP use a functional residual; explicit history queries validate.
+        return self.returned_history(xy, check_branch=False)[:3]
 
 
 def make_causal_model(settings, stiffness, case=None):
@@ -313,8 +326,10 @@ def make_causal_model(settings, stiffness, case=None):
             params = WeakPlaneParameters(**dict(settings["physics"],
                 joint_normal_deg=case["joint_normal_deg"])).checked()
             return ReturnedCausalPINN(*args, settings["projection"], elastic_case,
-                                      insitu=insitu, params=params).to(stiffness)
-        return SpectralCausalPINN(*args, settings["projection"], elastic_case).to(stiffness)
+                                      insitu=insitu, params=params,
+                                      increment_hidden=settings.get("increment_hidden")).to(stiffness)
+        return SpectralCausalPINN(*args, settings["projection"], elastic_case,
+                                 increment_hidden=settings.get("increment_hidden")).to(stiffness)
     if representation == "pointwise":
         return CausalMixedPINN(*args).to(stiffness)
     raise ValueError(f"Unknown field representation: {representation}")
@@ -345,6 +360,8 @@ def load_orientation_model(checkpoint, device="cpu"):
         spec.update(elastic_prefix="circular", case=case)
     if "constitutive_update" in settings:
         spec["constitutive_update"] = settings["constitutive_update"]
+    if "increment_hidden" in settings:
+        spec["increment_hidden"] = settings["increment_hidden"]
     bundle = dict(spec=spec, c=saved["c"], s0=saved["s0"],
                   params=WeakPlaneParameters(**spec["physics"]).checked())
     return bundle, saved, model

@@ -1,0 +1,72 @@
+{
+  "question": "Resolve the saved neural history with the specified domain, projection, quadrature and uniform load increments.",
+  "hidden": [
+    64,
+    64,
+    64,
+    64
+  ],
+  "radius": 4,
+  "load_steps": 12,
+  "representation": "spectral",
+  "constitutive_update": "joint_return",
+  "equilibrium_form": "virtual_work",
+  "projection": {
+    "radial_order": 48,
+    "angular_modes": 80,
+    "angular_samples": 320,
+    "centrosymmetric": true
+  },
+  "elastic_prefix": "circular",
+  "plastic_initialization": "preceding_trained_increment",
+  "quadrature": {
+    "radial": 96,
+    "angular": 512,
+    "boundary": 1024,
+    "stagger_angles": true,
+    "radial_power": 1
+  },
+  "weights": {
+    "equilibrium": 3.285697128825039,
+    "wall": 3.0928172158086884,
+    "interface": 5.076251850402668,
+    "constitutive": 5.703692056986043,
+    "complementarity": 100,
+    "gauge": 1,
+    "virtual_work": 47.12388980384689
+  },
+  "interface_metric": "compliance",
+  "trust_region": {
+    "evaluations_per_solve": 12,
+    "linear_iterations": 600,
+    "polish_evaluations": 0,
+    "gradient_reduction": 0.1
+  },
+  "physics": {
+    "matrix_cohesion_mpa": 2,
+    "matrix_phi_deg": 32.5,
+    "matrix_psi_deg": 2.5,
+    "joint_cohesion_mpa": 0.2,
+    "joint_phi_deg": 25,
+    "joint_psi_deg": 0,
+    "matrix_smoothing_mpa": 0.01,
+    "joint_smoothing_mpa": 0.01,
+    "complementarity_smoothing": 1e-08
+  },
+  "cases": [
+    {
+      "name": "bedding_crossed",
+      "eh_over_ev": 2.625,
+      "bedding_dip_deg": 45,
+      "opening_axes": [
+        1,
+        1
+      ],
+      "opening_angle_deg": 0,
+      "joint_normal_deg": 45
+    }
+  ],
+  "source_total_predictor_steps": [
+    12
+  ]
+}

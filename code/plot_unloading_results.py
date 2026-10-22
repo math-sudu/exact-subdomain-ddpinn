@@ -575,17 +575,15 @@ def main():
     global DATA
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", type=Path, default=DATA)
-    parser.add_argument("--figure-directory", type=Path)
+    parser.add_argument("--figure-directory", type=Path, default=ROOT / "figures")
     select = parser.add_mutually_exclusive_group()
-    select.add_argument("--figure", choices=["displacement", "wall", "plastic", "stress", "radial"])
-    select.add_argument("--stress-paths-only", action="store_true")
-    select.add_argument("--plastic-only", action="store_true")
+    select.add_argument("--figure", choices=["displacement", "wall"])
     args = parser.parse_args()
     DATA = args.data.resolve()
     if args.figure_directory:
         import figure_artwork
         figure_artwork.FIGURES = args.figure_directory.resolve()
-    selected = "stress" if args.stress_paths_only else "plastic" if args.plastic_only else args.figure
+    selected = args.figure
     metadata = json.loads((DATA / "metadata.json").read_text(encoding="utf-8"))
     configure_zoom(metadata)
     summary = read_csv("load_summary.csv")
@@ -595,13 +593,6 @@ def main():
                 displacement_figure(z, metadata, read_csv("wall_profiles.csv"))
             if selected in (None, "wall"):
                 wall_figure(z, metadata, read_csv("wall_profiles.csv"))
-            if selected in (None, "plastic"):
-                plastic_figure(z, metadata, summary)
-    if selected in (None, "stress"):
-        stress_path_figure(metadata)
-    if selected in (None, "radial"):
-        from plot_radial_kinematics import radial_figure
-        radial_figure(DATA)
 
 
 if __name__ == "__main__":

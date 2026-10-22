@@ -35,7 +35,9 @@ def radial_history(model, radii, direction, displacement_mm, radius_m):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--data', type=Path, default=DATA)
-    parser.add_argument('--orientation', action='store_true')
+    formulation = parser.add_mutually_exclusive_group()
+    formulation.add_argument('--orientation', action='store_true', default=False)
+    formulation.add_argument('--pointwise', action='store_false', dest='orientation')
     args = parser.parse_args()
     data = args.data.resolve()
     torch.set_num_threads(1)

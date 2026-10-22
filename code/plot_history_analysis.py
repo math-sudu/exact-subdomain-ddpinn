@@ -95,63 +95,16 @@ def unloading_evolution():
 
 
 def whole_space_kinematics():
-    size = (180, 130)
-    fig = fs.figure(*size)
-    stress = rows(DATA / "fixed_sector_stress_paths.csv")
-    locations = json.loads((DATA / "metadata.json").read_text())["fixed_locations"]
-    ax = axis(fig, (17, 76, 64, 40), "(a) Stress paths at fixed wall locations",
-              r"Normal compression $-\sigma_n$ (MPa)", r"$\tau_j$ (MPa)")
-    for name, color, style, label in (
-        ("early_negative_lobe", fs.BLUE, "--", "C"),
-        ("final_maximum_slip", fs.RED, "-", "B"),
-        ("final_maximum_closure", fs.BLACK, "-.", "A")):
-        points = [r for r in stress if r["location"] == name]
-        ax.plot([-float(r["sigma_n_MPa"]) for r in points], [float(r["tau_j_MPa"]) for r in points],
-                color=color, linestyle=style, marker="o", markersize=2.5,
-                markerfacecolor="white", linewidth=1,
-                label=rf"{label}: ${locations[name]['angle_deg']:g}^\circ$")
-    compression = np.linspace(0, 1.1, 80)
-    strength = .2 + compression*np.tan(np.deg2rad(25))
-    shear = np.sqrt(strength*(strength+.02))
-    ax.plot(compression, shear, ":", color=".6", linewidth=.7)
-    ax.plot(compression, -shear, ":", color=".6", linewidth=.7)
-    ax.legend(fontsize=7, frameon=False, loc="center left")
-    inner = np.load(BASELINE / "radial_kinematics.npz")
-    ax = axis(fig, (108, 76, 62, 40), "(b) Near-field radial strain",
-              r"Radius $r/a$", r"$\varepsilon_{rr}$ ($\mu\varepsilon$)")
-    for i, color, style, name in ((0, fs.BLACK, "-", "A"), (1, fs.RED, "--", "B")):
-        ax.plot(inner["radius_over_a"], inner["radial_strain"][i, :, -1]*1e6,
-                color=color, linestyle=style, linewidth=1, label=name)
-    ax.set_xlim(1, 3)
-    ax.legend(fontsize=8, frameon=False)
-    full = np.load(DATA / "whole_space_radial.npz")
-    r = full["radius_over_a"]
-    ax = axis(fig, (17, 16, 64, 40), "(c) Accumulation through the exterior",
-              r"Radius $r/a$", r"Cumulative $H(r)$ (mm)")
-    for i, color, style, name in ((0, fs.BLACK, "-", "A"), (1, fs.RED, "--", "B")):
-        ax.plot(r, full["cumulative_mm"][i, :, -1], color=color, linestyle=style, linewidth=1.2, label=name)
-        ax.axhline(full["convergence_mm"][i, -1], color=color, linestyle=":", linewidth=.7)
-    ax.axvline(3, color=".5", linestyle="-.", linewidth=.7)
-    ax.text(3.3, .012, r"$R_\Gamma$", fontsize=7)
-    ax.set_xscale("log")
-    ax.set_xlim(1, 100)
-    ax.set_xticks([1, 3, 10, 100], labels=["1", "3", "10", "100"])
-    ax.legend(fontsize=8, frameon=False, loc="upper left")
-    ax = axis(fig, (108, 16, 62, 40), "(d) Spatial formation of the A−B gap",
-              r"Radius $r/a$", r"$H_A(r)-H_B(r)$ (mm)")
-    for k, color, style in ((5, fs.BLACK, ":"), (8, fs.RED, "--"), (9, fs.BLUE, "-."), (12, fs.BLACK, "-")):
-        gap = full["cumulative_mm"][0, :, k-1]-full["cumulative_mm"][1, :, k-1]
-        ax.plot(r, gap, color=color, linestyle=style, linewidth=1, label=f"k={k}")
-    ax.axhline(0, color=".6", linewidth=.5)
-    ax.axvline(3, color=".5", linestyle="-.", linewidth=.7)
-    ax.set_xscale("log")
-    ax.set_xlim(1, 100)
-    ax.set_xticks([1, 3, 10, 100], labels=["1", "3", "10", "100"])
-    ax.legend(fontsize=7, frameon=False, loc="upper left")
-    export(fig, "whole_space_kinematics", size,
-           "Fixed stress paths and the full radial field link local sliding to distributed convergence.",
-           ["results/history_analysis/fixed_sector_stress_paths.csv", "results/history_analysis/whole_space_radial.npz",
-            "results/unloading/radial_kinematics.npz"])
+    from plot_whole_space_kinematics import draw
+    fig, size, bindings = draw(DATA, BASELINE)
+    art.export(fig, "whole_space_kinematics", size,
+               "Located stress paths and radial strain explain whole-space convergence; the common elastic background dominates the final A-minus-B difference.",
+               ["results/history_analysis/metadata.json",
+                "results/history_analysis/fixed_sector_stress_paths.csv",
+                "results/history_analysis/whole_space_radial.npz",
+                "results/history_analysis/kinematics_figure.npz",
+                "results/unloading/radial_kinematics.npz"],
+               "code/plot_whole_space_kinematics.py", **bindings)
 
 
 def orientation_gauges():

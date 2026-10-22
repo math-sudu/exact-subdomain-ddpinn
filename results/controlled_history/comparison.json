@@ -1,0 +1,1021 @@
+{
+  "purpose": "Assess full-release source repeatability with re-solved plastic prefixes and common physical checks, retaining any failed final targets.",
+  "fixed_problem": {
+    "radius": 4.0,
+    "load_steps": 12,
+    "hidden": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "projection": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "quadrature": {
+      "radial": 96,
+      "angular": 512,
+      "boundary": 1024,
+      "stagger_angles": true,
+      "radial_power": 1
+    },
+    "physics": {
+      "matrix_cohesion_mpa": 2,
+      "matrix_phi_deg": 32.5,
+      "matrix_psi_deg": 2.5,
+      "joint_cohesion_mpa": 0.2,
+      "joint_phi_deg": 25,
+      "joint_psi_deg": 0,
+      "matrix_smoothing_mpa": 0.01,
+      "joint_smoothing_mpa": 0.01,
+      "complementarity_smoothing": 1e-08
+    },
+    "weights": {
+      "equilibrium": 3.285697128825039,
+      "wall": 3.0928172158086884,
+      "interface": 5.076251850402668,
+      "constitutive": 5.703692056986043,
+      "complementarity": 100,
+      "gauge": 1,
+      "virtual_work": 47.12388980384689
+    },
+    "elastic_prefix": "circular",
+    "interface_metric": "compliance",
+    "constitutive_update": "joint_return"
+  },
+  "targets": {
+    "response_change_mm": 0.0001,
+    "gauge_imbalance_mm": 0.001,
+    "wall_rms_mpa": 0.01,
+    "weak_residual_norm": 0.032717857596343644
+  },
+  "baseline": {
+    "gauges": [
+      {
+        "gauge_deg": 0.0,
+        "retained_mm": 0.10631642766033117,
+        "source_mm": -0.0338825038616283,
+        "imbalance_mm": 0.00021275100116218554,
+        "end_tension_source_mm": -0.007837946120432744,
+        "end_tension_source_fraction": 0.2313272405263167
+      },
+      {
+        "gauge_deg": 90.0,
+        "retained_mm": 0.5349777292122081,
+        "source_mm": 0.07239496577341091,
+        "imbalance_mm": 0.0023991657391634474,
+        "end_tension_source_mm": 0.007670122383847542,
+        "end_tension_source_fraction": 0.10594828386070748
+      }
+    ],
+    "vertical_side_share": 0.8706311639838351,
+    "vertical_last_third_share": 0.6955484474380282,
+    "maximum_exterior_yield_mpa": -0.20571135702102789,
+    "relative_weak_residual": 0.058993856706979306,
+    "wall_vector_rms_mpa": 0.048057033654318106,
+    "independent_weak_test": {
+      "checkpoint": "results/history_resolution/parallel_r4_j48_m80/model.pt",
+      "completed_steps": 12,
+      "pending_step": null,
+      "displacement_space": {
+        "radial_order": 48,
+        "angular_modes": 80,
+        "angular_samples": 320,
+        "centrosymmetric": true
+      },
+      "test_space": {
+        "radial_order": 64,
+        "angular_modes": 112
+      },
+      "integration": {
+        "radial": 128,
+        "angular": 768
+      },
+      "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+      "rows": [
+        {
+          "load_step": 12,
+          "residual_dual_norm": 0.09849145183965659,
+          "source_dual_norm": 1.6360271034627298,
+          "relative_residual_to_source": 0.06020160156955512
+        }
+      ]
+    }
+  },
+  "studies": {
+    "parallel_source": {
+      "gauges": [
+        {
+          "gauge_deg": 0.0,
+          "retained_mm": 0.10801794613801019,
+          "source_mm": -0.03181267494183894,
+          "imbalance_mm": -0.00015555944094815255,
+          "end_tension_source_mm": -0.0006569024548012604,
+          "end_tension_source_fraction": 0.02064907952576238
+        },
+        {
+          "gauge_deg": 90.0,
+          "retained_mm": 0.5316342981318061,
+          "source_mm": 0.07165356318702742,
+          "imbalance_mm": -0.0002028627548550932,
+          "end_tension_source_mm": 0.0007237531010155623,
+          "end_tension_source_fraction": 0.010100727288696714
+        }
+      ],
+      "vertical_side_share": 0.8589561350736364,
+      "vertical_last_third_share": 0.6911941644514132,
+      "maximum_exterior_yield_mpa": -0.22378426352504738,
+      "predictor": "source",
+      "onset_scale": 1.0,
+      "independent_weak_test": {
+        "checkpoint": "results/controlled_history/parallel_source/model.pt",
+        "completed_steps": 11,
+        "pending_step": 12,
+        "displacement_space": {
+          "radial_order": 48,
+          "angular_modes": 80,
+          "angular_samples": 320,
+          "centrosymmetric": true
+        },
+        "test_space": {
+          "radial_order": 64,
+          "angular_modes": 112
+        },
+        "integration": {
+          "radial": 128,
+          "angular": 768
+        },
+        "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+        "rows": [
+          {
+            "load_step": 3,
+            "residual_dual_norm": 0.0006499680997611374,
+            "source_dual_norm": 0.0002793301508950057,
+            "relative_residual_to_source": 2.32688128252022
+          },
+          {
+            "load_step": 4,
+            "residual_dual_norm": 0.0010350501136424913,
+            "source_dual_norm": 0.03967026301932437,
+            "relative_residual_to_source": 0.026091334789948142
+          },
+          {
+            "load_step": 5,
+            "residual_dual_norm": 0.0019935776557660476,
+            "source_dual_norm": 0.12339256919292266,
+            "relative_residual_to_source": 0.01615638339330722
+          },
+          {
+            "load_step": 6,
+            "residual_dual_norm": 0.0034791011963669722,
+            "source_dual_norm": 0.24206227921154566,
+            "relative_residual_to_source": 0.014372752366453918
+          },
+          {
+            "load_step": 7,
+            "residual_dual_norm": 0.0068686379380659334,
+            "source_dual_norm": 0.39848574908621187,
+            "relative_residual_to_source": 0.01723684712393545
+          },
+          {
+            "load_step": 8,
+            "residual_dual_norm": 0.01420866248107226,
+            "source_dual_norm": 0.5871920891035206,
+            "relative_residual_to_source": 0.024197639485853677
+          },
+          {
+            "load_step": 9,
+            "residual_dual_norm": 0.024387887982481392,
+            "source_dual_norm": 0.8346166385452689,
+            "relative_residual_to_source": 0.029220467045791603
+          },
+          {
+            "load_step": 10,
+            "residual_dual_norm": 0.022523684203157368,
+            "source_dual_norm": 1.0526692302794354,
+            "relative_residual_to_source": 0.021396734658215823
+          },
+          {
+            "load_step": 11,
+            "residual_dual_norm": 0.028811180687277962,
+            "source_dual_norm": 1.269568118327962,
+            "relative_residual_to_source": 0.022693686357863705
+          },
+          {
+            "load_step": 12,
+            "residual_dual_norm": 0.03599119968195849,
+            "source_dual_norm": 1.5436650118341815,
+            "relative_residual_to_source": 0.023315421031143136
+          }
+        ]
+      },
+      "history_assessment": [
+        {
+          "load_step": 3,
+          "residual_dual_norm": 0.0006499680997611374,
+          "source_dual_norm": 0.0002793301508950057,
+          "relative_residual_to_source": 2.32688128252022,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": 1.0817032609683037e-07,
+              "retained_mm": 0.03499710850567973,
+              "imbalance_mm": 4.552051543158563e-07
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 1.8998288712628822e-06,
+              "retained_mm": 0.11505318172316846,
+              "imbalance_mm": 5.382469388762251e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 2.013479734923545e-06,
+              "retained_mm": 0.1207037542018907,
+              "imbalance_mm": 3.924806360096128e-06
+            }
+          ]
+        },
+        {
+          "load_step": 4,
+          "residual_dual_norm": 0.0010350501136424913,
+          "source_dual_norm": 0.03967026301932437,
+          "relative_residual_to_source": 0.026091334789948142,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.00048653983021754773,
+              "retained_mm": 0.04619079690912809,
+              "imbalance_mm": 1.527656574655447e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.0008521640984750029,
+              "retained_mm": 0.154245855366151,
+              "imbalance_mm": -8.412988685785544e-07
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.0008935259134094557,
+              "retained_mm": 0.16182476490003117,
+              "imbalance_mm": 8.177655608051409e-07
+            }
+          ]
+        },
+        {
+          "load_step": 5,
+          "residual_dual_norm": 0.0019935776557660476,
+          "source_dual_norm": 0.12339256919292266,
+          "relative_residual_to_source": 0.01615638339330722,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.002146284844348914,
+              "retained_mm": 0.0561953605692229,
+              "imbalance_mm": 1.4070196572942093e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.003453109386861546,
+              "retained_mm": 0.19519757172248361,
+              "imbalance_mm": 1.2966274413671146e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.003599086980850793,
+              "retained_mm": 0.20476183954093746,
+              "imbalance_mm": -2.7396623947456913e-07
+            }
+          ]
+        },
+        {
+          "load_step": 6,
+          "residual_dual_norm": 0.0034791011963669722,
+          "source_dual_norm": 0.24206227921154566,
+          "relative_residual_to_source": 0.014372752366453918,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.003735987740424402,
+              "retained_mm": 0.06624974827775545,
+              "imbalance_mm": -7.354242218784307e-06
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.007712951093106793,
+              "retained_mm": 0.23781045116945368,
+              "imbalance_mm": 5.701226530016416e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.008100726009774809,
+              "retained_mm": 0.24950432764557762,
+              "imbalance_mm": 7.969804211457876e-06
+            }
+          ]
+        },
+        {
+          "load_step": 7,
+          "residual_dual_norm": 0.0068686379380659334,
+          "source_dual_norm": 0.39848574908621187,
+          "relative_residual_to_source": 0.01723684712393545,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.005802193275259693,
+              "retained_mm": 0.07585027790664227,
+              "imbalance_mm": -6.134121896450052e-06
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.01388683887141619,
+              "retained_mm": 0.2823200668113025,
+              "imbalance_mm": -7.2040515666938615e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.01520290070304367,
+              "retained_mm": 0.2968266031192438,
+              "imbalance_mm": -4.534720656451663e-06
+            }
+          ]
+        },
+        {
+          "load_step": 8,
+          "residual_dual_norm": 0.01420866248107226,
+          "source_dual_norm": 0.5871920891035206,
+          "relative_residual_to_source": 0.024197639485853677,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.009626879953970683,
+              "retained_mm": 0.08368536157767349,
+              "imbalance_mm": -1.1878815553994018e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.02212703845000346,
+              "retained_mm": 0.3289054932455393,
+              "imbalance_mm": -1.0610337553333682e-05
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.025605732183312864,
+              "retained_mm": 0.34747488226077955,
+              "imbalance_mm": 8.30763534486606e-06
+            }
+          ]
+        },
+        {
+          "load_step": 9,
+          "residual_dual_norm": 0.024387887982481392,
+          "source_dual_norm": 0.8346166385452689,
+          "relative_residual_to_source": 0.029220467045791603,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.01612985568048552,
+              "retained_mm": 0.08889299972663854,
+              "imbalance_mm": 3.322001652612122e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.033286181953477385,
+              "retained_mm": 0.37839023226503987,
+              "imbalance_mm": -3.364796316280422e-05
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.04049127253487541,
+              "retained_mm": 0.40253444154679363,
+              "imbalance_mm": -5.027873546883249e-05
+            }
+          ]
+        },
+        {
+          "load_step": 10,
+          "residual_dual_norm": 0.022523684203157368,
+          "source_dual_norm": 1.0526692302794354,
+          "relative_residual_to_source": 0.021396734658215823,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.020558046896441987,
+              "retained_mm": 0.09622557565759218,
+              "imbalance_mm": 0.00012847212003642972
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.04436990282741907,
+              "retained_mm": 0.42773097536240795,
+              "imbalance_mm": -0.00012525888137251973
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.05482322247336596,
+              "retained_mm": 0.45696108561479004,
+              "imbalance_mm": -0.00018818991122820927
+            }
+          ]
+        },
+        {
+          "load_step": 11,
+          "residual_dual_norm": 0.028811180687277962,
+          "source_dual_norm": 1.269568118327962,
+          "relative_residual_to_source": 0.022693686357863705,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.02637801208743296,
+              "retained_mm": 0.10181568605886132,
+              "imbalance_mm": -0.00012696733110320255
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.057523647222853254,
+              "retained_mm": 0.47925052103224564,
+              "imbalance_mm": -0.00010809074860518991
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.0723785720162064,
+              "retained_mm": 0.5148245000038453,
+              "imbalance_mm": -0.0001127303702785909
+            }
+          ]
+        },
+        {
+          "load_step": 12,
+          "residual_dual_norm": 0.03599119968195849,
+          "source_dual_norm": 1.5436650118341815,
+          "relative_residual_to_source": 0.023315421031143136,
+          "accepted": false,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.03181267494183894,
+              "retained_mm": 0.10801794613801019,
+              "imbalance_mm": -0.00015555944094815255
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.07165356318702742,
+              "retained_mm": 0.5316342981318061,
+              "imbalance_mm": -0.0002028627548550932
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.10025545543234622,
+              "retained_mm": 0.5828164860750326,
+              "imbalance_mm": -0.00023023302049636485
+            }
+          ]
+        }
+      ],
+      "accepted_plastic_increments": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "completed_steps": 11,
+      "final_accepted": false,
+      "final_pending_reasons": [
+        "wall_traction",
+        "response_change",
+        "enriched_weak_balance"
+      ],
+      "final_weak_residual_norm": 0.03484897304691076,
+      "relative_weak_residual": 0.022575864921416184,
+      "wall_vector_rms_mpa": 0.011247485933169177,
+      "minimum_sampled_prefix_branch_margin": 0.05138913077922529,
+      "maximum_accepted_weak_residual_norm": 0.02803565073298995,
+      "maximum_accepted_wall_rms_mpa": 0.009595308042703046,
+      "training_test_enrichment": {
+        "step": 10,
+        "previous_test_space": {
+          "radial_order": 48,
+          "angular_modes": 80
+        },
+        "test_space": {
+          "radial_order": 56,
+          "angular_modes": 96
+        },
+        "first_recorded_evaluations": 48,
+        "recovered_from": "physical_history.json",
+        "reason": "Step and test-space transition recovered from saved physical assessments; the original event evaluation count was not retained."
+      },
+      "constrained_head_solves": []
+    },
+    "parallel_preceding": {
+      "gauges": [
+        {
+          "gauge_deg": 0.0,
+          "retained_mm": 0.1059487154971785,
+          "source_mm": -0.033935585692905744,
+          "imbalance_mm": -0.00010187933071303251,
+          "end_tension_source_mm": -0.0007677060917354538,
+          "end_tension_source_fraction": 0.022622450034682714
+        },
+        {
+          "gauge_deg": 90.0,
+          "retained_mm": 0.5333503522494994,
+          "source_mm": 0.07337780155190354,
+          "imbalance_mm": -0.0002110470020378341,
+          "end_tension_source_mm": 0.000864504840642702,
+          "end_tension_source_fraction": 0.011781558214594333
+        }
+      ],
+      "vertical_side_share": 0.8825339999138868,
+      "vertical_last_third_share": 0.699491088150727,
+      "maximum_exterior_yield_mpa": -0.21964757256891257,
+      "predictor": "preceding",
+      "onset_scale": 0.5,
+      "independent_weak_test": {
+        "checkpoint": "results/controlled_history/parallel_preceding/model.pt",
+        "completed_steps": 11,
+        "pending_step": 12,
+        "displacement_space": {
+          "radial_order": 48,
+          "angular_modes": 80,
+          "angular_samples": 320,
+          "centrosymmetric": true
+        },
+        "test_space": {
+          "radial_order": 64,
+          "angular_modes": 112
+        },
+        "integration": {
+          "radial": 128,
+          "angular": 768
+        },
+        "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+        "rows": [
+          {
+            "load_step": 3,
+            "residual_dual_norm": 0.0005632953257988727,
+            "source_dual_norm": 0.00028510731640578443,
+            "relative_residual_to_source": 1.9757308682922463
+          },
+          {
+            "load_step": 4,
+            "residual_dual_norm": 0.00159711827351876,
+            "source_dual_norm": 0.03840498072885176,
+            "relative_residual_to_source": 0.04158622770298447
+          },
+          {
+            "load_step": 5,
+            "residual_dual_norm": 0.002045837138625668,
+            "source_dual_norm": 0.1238245695393162,
+            "relative_residual_to_source": 0.01652206138278626
+          },
+          {
+            "load_step": 6,
+            "residual_dual_norm": 0.004160416761904884,
+            "source_dual_norm": 0.23942206009495864,
+            "relative_residual_to_source": 0.017376914893534854
+          },
+          {
+            "load_step": 7,
+            "residual_dual_norm": 0.006670899542178711,
+            "source_dual_norm": 0.4027200115559226,
+            "relative_residual_to_source": 0.01656460903545732
+          },
+          {
+            "load_step": 8,
+            "residual_dual_norm": 0.012841093812377196,
+            "source_dual_norm": 0.5867937649245436,
+            "relative_residual_to_source": 0.021883487146507844
+          },
+          {
+            "load_step": 9,
+            "residual_dual_norm": 0.023682708596661897,
+            "source_dual_norm": 0.8336380374859592,
+            "relative_residual_to_source": 0.028408862757849842
+          },
+          {
+            "load_step": 10,
+            "residual_dual_norm": 0.021828073949544915,
+            "source_dual_norm": 1.0489953066415085,
+            "relative_residual_to_source": 0.02080855253721798
+          },
+          {
+            "load_step": 11,
+            "residual_dual_norm": 0.02957348960574934,
+            "source_dual_norm": 1.293707716687013,
+            "relative_residual_to_source": 0.02285948303800994
+          },
+          {
+            "load_step": 12,
+            "residual_dual_norm": 0.036868574560274994,
+            "source_dual_norm": 1.5615834406316869,
+            "relative_residual_to_source": 0.023609737143063605
+          }
+        ]
+      },
+      "history_assessment": [
+        {
+          "load_step": 3,
+          "residual_dual_norm": 0.0005632953257988727,
+          "source_dual_norm": 0.00028510731640578443,
+          "relative_residual_to_source": 1.9757308682922463,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": 1.0706402822195611e-07,
+              "retained_mm": 0.03499766966595327,
+              "imbalance_mm": 1.0174717257243758e-06
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 1.9361595322096194e-06,
+              "retained_mm": 0.11504841897857475,
+              "imbalance_mm": 5.833941341040037e-07
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 2.0519042865896953e-06,
+              "retained_mm": 0.12069898790775399,
+              "imbalance_mm": -8.79912328274396e-07
+            }
+          ]
+        },
+        {
+          "load_step": 4,
+          "residual_dual_norm": 0.00159711827351876,
+          "source_dual_norm": 0.03840498072885176,
+          "relative_residual_to_source": 0.04158622770298447,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.0004793678470733661,
+              "retained_mm": 0.04622246959490183,
+              "imbalance_mm": 3.977726837611268e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.0008377888259022203,
+              "retained_mm": 0.15423595192635983,
+              "imbalance_mm": 3.630533913022752e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.000878670597358549,
+              "retained_mm": 0.16180897197970606,
+              "imbalance_mm": -1.198387133966158e-07
+            }
+          ]
+        },
+        {
+          "load_step": 5,
+          "residual_dual_norm": 0.002045837138625668,
+          "source_dual_norm": 0.1238245695393162,
+          "relative_residual_to_source": 0.01652206138278626,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.0021285025330248946,
+              "retained_mm": 0.056219747285843405,
+              "imbalance_mm": 2.067460186942977e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.003468587361495979,
+              "retained_mm": 0.19522143666016495,
+              "imbalance_mm": 9.683590488268005e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.0036147902135858796,
+              "retained_mm": 0.2047776806616357,
+              "imbalance_mm": -1.3607827631552383e-07
+            }
+          ]
+        },
+        {
+          "load_step": 6,
+          "residual_dual_norm": 0.004160416761904884,
+          "source_dual_norm": 0.23942206009495864,
+          "relative_residual_to_source": 0.017376914893534854,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.0038255709443471347,
+              "retained_mm": 0.0661881396932239,
+              "imbalance_mm": 2.0620377172395586e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.007642455613280291,
+              "retained_mm": 0.23773078712599469,
+              "imbalance_mm": -3.4673371024753277e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.008020420163635567,
+              "retained_mm": 0.24939662674329982,
+              "imbalance_mm": -1.9425251927097237e-05
+            }
+          ]
+        },
+        {
+          "load_step": 7,
+          "residual_dual_norm": 0.006670899542178711,
+          "source_dual_norm": 0.4027200115559226,
+          "relative_residual_to_source": 0.01656460903545732,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.0060033150150674616,
+              "retained_mm": 0.07564058961386533,
+              "imbalance_mm": -1.470067486562289e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.013877112751496255,
+              "retained_mm": 0.2823143529056824,
+              "imbalance_mm": -3.1918372668561512e-06
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.015197079368275844,
+              "retained_mm": 0.29681183264598837,
+              "imbalance_mm": -1.3483859144057878e-05
+            }
+          ]
+        },
+        {
+          "load_step": 8,
+          "residual_dual_norm": 0.012841093812377196,
+          "source_dual_norm": 0.5867937649245436,
+          "relative_residual_to_source": 0.021883487146507844,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.009474190363563142,
+              "retained_mm": 0.08381572752215585,
+              "imbalance_mm": -3.4202461479174856e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.022050683298254433,
+              "retained_mm": 0.32882280291293137,
+              "imbalance_mm": -1.6945518412244537e-05
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.02546996792626726,
+              "retained_mm": 0.34731227995904107,
+              "imbalance_mm": -1.853040934800959e-05
+            }
+          ]
+        },
+        {
+          "load_step": 9,
+          "residual_dual_norm": 0.023682708596661897,
+          "source_dual_norm": 0.8336380374859592,
+          "relative_residual_to_source": 0.028408862757849842,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.015827717622071327,
+              "retained_mm": 0.08924187797746216,
+              "imbalance_mm": 7.996020893554986e-05
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.03325122302057206,
+              "retained_mm": 0.3783653589126354,
+              "imbalance_mm": -2.3562382661955483e-05
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.040412027391337896,
+              "retained_mm": 0.4024558529351002,
+              "imbalance_mm": -4.962220362472736e-05
+            }
+          ]
+        },
+        {
+          "load_step": 10,
+          "residual_dual_norm": 0.021828073949544915,
+          "source_dual_norm": 1.0489953066415085,
+          "relative_residual_to_source": 0.02080855253721798,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.021251865040744507,
+              "retained_mm": 0.09557204433421924,
+              "imbalance_mm": 0.00016875894096601146
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.044442148133666697,
+              "retained_mm": 0.42779991240852255,
+              "imbalance_mm": -0.00012856714150554643
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.05497215756921222,
+              "retained_mm": 0.457081945062856,
+              "imbalance_mm": -0.00021626555900852024
+            }
+          ]
+        },
+        {
+          "load_step": 11,
+          "residual_dual_norm": 0.02957348960574934,
+          "source_dual_norm": 1.293707716687013,
+          "relative_residual_to_source": 0.02285948303800994,
+          "accepted": true,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.028203887234685872,
+              "retained_mm": 0.10023637873497103,
+              "imbalance_mm": 0.00011960049225941821
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.05825634013497833,
+              "retained_mm": 0.47987471565777773,
+              "imbalance_mm": -0.0002165890351981739
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.07321070232760285,
+              "retained_mm": 0.5154677945992138,
+              "imbalance_mm": -0.00030156608630654835
+            }
+          ]
+        },
+        {
+          "load_step": 12,
+          "residual_dual_norm": 0.036868574560274994,
+          "source_dual_norm": 1.5615834406316869,
+          "relative_residual_to_source": 0.023609737143063605,
+          "accepted": false,
+          "gauges": [
+            {
+              "gauge_deg": 0.0,
+              "source_total_mm": -0.033935585692905744,
+              "retained_mm": 0.1059487154971785,
+              "imbalance_mm": -0.00010187933071303251
+            },
+            {
+              "gauge_deg": 90.0,
+              "source_total_mm": 0.07337780155190354,
+              "retained_mm": 0.5333503522494994,
+              "imbalance_mm": -0.0002110470020378341
+            },
+            {
+              "gauge_deg": 104.0,
+              "source_total_mm": 0.10298224766693231,
+              "retained_mm": 0.5855393274226568,
+              "imbalance_mm": -0.0002341839074582186
+            }
+          ]
+        }
+      ],
+      "accepted_plastic_increments": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "completed_steps": 11,
+      "final_accepted": false,
+      "final_pending_reasons": [
+        "wall_traction",
+        "enriched_weak_balance"
+      ],
+      "final_weak_residual_norm": 0.03581731289343556,
+      "relative_weak_residual": 0.022936808640184866,
+      "wall_vector_rms_mpa": 0.01041088107472839,
+      "minimum_sampled_prefix_branch_margin": 0.04919701390354608,
+      "maximum_accepted_weak_residual_norm": 0.02883305107596043,
+      "maximum_accepted_wall_rms_mpa": 0.008490638845677257,
+      "training_test_enrichment": {
+        "step": 10,
+        "previous_test_space": {
+          "radial_order": 48,
+          "angular_modes": 80
+        },
+        "test_space": {
+          "radial_order": 56,
+          "angular_modes": 96
+        },
+        "first_recorded_evaluations": 108,
+        "recovered_from": "physical_history.json",
+        "reason": "Step and test-space transition recovered from saved physical assessments; the original event evaluation count was not retained."
+      },
+      "constrained_head_solves": []
+    }
+  },
+  "preceding_minus_source": [
+    {
+      "gauge_deg": 0.0,
+      "source_difference_mm": -0.0021229107510668047,
+      "relative_source_difference": -0.06673160163199056,
+      "displacement_difference_mm": -0.0020692306408316846
+    },
+    {
+      "gauge_deg": 90.0,
+      "source_difference_mm": 0.0017242383648761184,
+      "relative_source_difference": 0.024063539734591795,
+      "displacement_difference_mm": 0.0017160541176933775
+    }
+  ],
+  "increment_differences": [
+    {
+      "step": 3,
+      "both_accepted": true,
+      "source_difference_0_mm": -1.1062978745453736e-09,
+      "source_difference_90_mm": 3.633066094274663e-08
+    },
+    {
+      "step": 4,
+      "both_accepted": true,
+      "source_difference_0_mm": 7.171983144172345e-06,
+      "source_difference_90_mm": -1.4375272572789491e-05
+    },
+    {
+      "step": 5,
+      "both_accepted": true,
+      "source_difference_0_mm": 1.7782311324039506e-05,
+      "source_difference_90_mm": 1.5477974634418596e-05
+    },
+    {
+      "step": 6,
+      "both_accepted": true,
+      "source_difference_0_mm": -8.958320392270149e-05,
+      "source_difference_90_mm": -7.04954798265104e-05
+    },
+    {
+      "step": 7,
+      "both_accepted": true,
+      "source_difference_0_mm": -0.00020112173980773532,
+      "source_difference_90_mm": -9.72611992000258e-06
+    },
+    {
+      "step": 8,
+      "both_accepted": true,
+      "source_difference_0_mm": 0.00015268959040759186,
+      "source_difference_90_mm": -7.63551517489712e-05
+    },
+    {
+      "step": 9,
+      "both_accepted": true,
+      "source_difference_0_mm": 0.0003021380584142218,
+      "source_difference_90_mm": -3.495893290525465e-05
+    },
+    {
+      "step": 10,
+      "both_accepted": true,
+      "source_difference_0_mm": -0.0006938181443023571,
+      "source_difference_90_mm": 7.224530624756753e-05
+    },
+    {
+      "step": 11,
+      "both_accepted": true,
+      "source_difference_0_mm": -0.0018258751472528326,
+      "source_difference_90_mm": 0.0007326929121247855
+    },
+    {
+      "step": 12,
+      "both_accepted": false,
+      "source_difference_0_mm": -0.00212291075106677,
+      "source_difference_90_mm": 0.0017242383648763543
+    }
+  ]
+}

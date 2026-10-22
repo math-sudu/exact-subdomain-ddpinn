@@ -1,0 +1,27 @@
+{
+  "checkpoint": "results/history_resolution/oblique_j40_m80/model.pt",
+  "completed_steps": 12,
+  "displacement_space": {
+    "radial_order": 40,
+    "angular_modes": 80,
+    "angular_samples": 320,
+    "centrosymmetric": true
+  },
+  "test_space": {
+    "radial_order": 48,
+    "angular_modes": 96
+  },
+  "integration": {
+    "radial": 96,
+    "angular": 512
+  },
+  "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+  "rows": [
+    {
+      "load_step": 12,
+      "residual_dual_norm": 0.02620408809395351,
+      "source_dual_norm": 4.806448158237331,
+      "relative_residual_to_source": 0.005451861173004586
+    }
+  ]
+}

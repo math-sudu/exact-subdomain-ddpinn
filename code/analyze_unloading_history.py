@@ -11,7 +11,7 @@ import torch
 from current_histories import HISTORIES
 from extract_unloading_results import plane_shear, sample_fields, stress_path_rows
 from pilot import plasticity as P
-from pilot.spectral_mixed import load_orientation_model
+from pilot.spectral_mixed import ReturnedCausalPINN, load_orientation_model
 from publication_model import write_rows
 from sf_core.material import TIMaterial
 
@@ -31,7 +31,8 @@ def material_from_metadata(metadata):
 def wall_history(bundle, model, angles, scale):
     units = np.column_stack((np.cos(np.deg2rad(angles)), np.sin(np.deg2rad(angles))))
     points = model.multiplier_scale.new_tensor(units)
-    u, stress, multiplier = model(points)
+    u, stress, multiplier = (model.returned_history(points)[:3]
+        if isinstance(model, ReturnedCausalPINN) else model(points))
     total = stress + bundle["s0"].to(stress)
     joint = multiplier[..., 1:] * P.joint_flow_direction(total, bundle["params"])
     delta = plane_shear(joint, bundle["params"].joint_normal_deg).cpu().numpy()

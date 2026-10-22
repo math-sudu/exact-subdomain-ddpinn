@@ -1,0 +1,39 @@
+{
+  "checkpoint": "results/orientation_expanded/bedding_crossed/model.pt",
+  "completed_steps": 12,
+  "displacement_space": {
+    "radial_order": 40,
+    "angular_modes": 64,
+    "angular_samples": 256,
+    "centrosymmetric": true
+  },
+  "test_space": {
+    "radial_order": 48,
+    "angular_modes": 80
+  },
+  "integration": {
+    "radial": 96,
+    "angular": 512
+  },
+  "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+  "rows": [
+    {
+      "load_step": 6,
+      "residual_dual_norm": 0.009209609166961617,
+      "source_dual_norm": 0.2176352752082658,
+      "relative_residual_to_source": 0.04231671156318061
+    },
+    {
+      "load_step": 9,
+      "residual_dual_norm": 0.013900744112473096,
+      "source_dual_norm": 0.7457829068978102,
+      "relative_residual_to_source": 0.018639129408711194
+    },
+    {
+      "load_step": 12,
+      "residual_dual_norm": 0.04219977880462717,
+      "source_dual_norm": 1.5965605437251404,
+      "relative_residual_to_source": 0.026431680884562915
+    }
+  ]
+}

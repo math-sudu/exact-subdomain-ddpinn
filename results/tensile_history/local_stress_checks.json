@@ -1,0 +1,65 @@
+{
+  "query": "Strict complete-prefix constitutive replay at the documented local-search coordinates",
+  "rows": [
+    {
+      "name": "perpendicular_reference",
+      "checkpoint": "results/orientation_expanded/bedding_crossed/model.pt",
+      "step": 12,
+      "radius_over_a": 1.00934,
+      "angle_deg": 42.416,
+      "normal_stress_mpa": 0.42707859466436415,
+      "shear_stress_mpa": -0.0042097601623741765,
+      "apex_normal_margin_mpa": 0.0018227894375476006
+    },
+    {
+      "name": "perpendicular_space_step11",
+      "checkpoint": "results/history_resolution/perpendicular_j48_m80/model.pt",
+      "step": 11,
+      "radius_over_a": 1.4353,
+      "angle_deg": 45.601,
+      "normal_stress_mpa": 0.42849497792830993,
+      "shear_stress_mpa": -0.001956047131191574,
+      "apex_normal_margin_mpa": 0.0004064061736018254
+    },
+    {
+      "name": "perpendicular_space_step12",
+      "checkpoint": "results/history_resolution/perpendicular_j48_m80/model.pt",
+      "step": 12,
+      "radius_over_a": 1.0257746331635116,
+      "angle_deg": 44.250035313157376,
+      "normal_stress_mpa": 0.4282625948222051,
+      "shear_stress_mpa": -0.002458897026778928,
+      "apex_normal_margin_mpa": 0.0006387892797066752
+    },
+    {
+      "name": "parallel_space_internal",
+      "checkpoint": "results/history_resolution/parallel_r4_j48_m80/model.pt",
+      "step": 12,
+      "radius_over_a": 1.5947365864289207,
+      "angle_deg": 135.00101276835156,
+      "normal_stress_mpa": 0.4281662529204615,
+      "shear_stress_mpa": -0.002640730198605945,
+      "apex_normal_margin_mpa": 0.0007351311814502437
+    },
+    {
+      "name": "parallel_space_near_wall",
+      "checkpoint": "results/history_resolution/parallel_r4_j48_m80/model.pt",
+      "step": 12,
+      "radius_over_a": 1.00474757345081,
+      "angle_deg": 137.63385706828615,
+      "normal_stress_mpa": 0.4280755939813292,
+      "shear_stress_mpa": 0.0028017362096453002,
+      "apex_normal_margin_mpa": 0.0008257901205825369
+    },
+    {
+      "name": "perpendicular_steps_near_wall",
+      "checkpoint": "results/history_resolution/perpendicular_n24/model.pt",
+      "step": 24,
+      "radius_over_a": 1.00498,
+      "angle_deg": 41.616,
+      "normal_stress_mpa": 0.12404186419503171,
+      "shear_stress_mpa": -0.15182936811234338,
+      "apex_normal_margin_mpa": 0.30485951990688004
+    }
+  ]
+}

@@ -14,7 +14,8 @@ import torch
 
 from publication_model import load_model, write_rows
 from pilot import config as C, plasticity as P
-from pilot.spectral_mixed import load_orientation_model
+from pilot.spectral_mixed import ReturnedCausalPINN, load_orientation_model
+from current_histories import HISTORIES
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN = ROOT / 'results/model'
@@ -40,7 +41,8 @@ def sample_fields(bundle, model, xy):
     for chunk in np.array_split(xy, max(1, int(np.ceil(len(xy) / 2048)))):
         points = torch.as_tensor(chunk, device=model.multiplier_scale.device,
                                  dtype=model.multiplier_scale.dtype)
-        u, stress, multiplier = model(points)
+        u, stress, multiplier = (model.returned_history(points)[:3]
+            if isinstance(model, ReturnedCausalPINN) else model(points))
         total = stress + bundle['s0'].to(stress)
         scale = C.U_REF / C.A_TUNNEL
         matrix = multiplier[..., :1] * P.matrix_flow_direction(total, bundle['params']) * scale
@@ -63,7 +65,8 @@ def sample_fields(bundle, model, xy):
 def stress_path_rows(bundle, model, locations):
     """Resolve total stress and flow at the same fixed wall coordinates."""
     xy = model.multiplier_scale.new_tensor([p['xy_over_a'] for p in locations.values()])
-    u, stress, multiplier = model(xy)
+    u, stress, multiplier = (model.returned_history(xy)[:3]
+        if isinstance(model, ReturnedCausalPINN) else model(xy))
     total = stress + bundle['s0'].to(stress)
     sigma_n, tau, _, _ = P._joint_stresses(total, bundle['params'])
     yield_value = P.joint_yield(total, bundle['params'])
@@ -227,10 +230,14 @@ if __name__ == '__main__':
     parser.add_argument('--checkpoint', type=Path)
     parser.add_argument('--output', type=Path, default=OUTPUT)
     parser.add_argument('--device', default='cpu')
-    parser.add_argument('--orientation', action='store_true',
+    formulation = parser.add_mutually_exclusive_group()
+    formulation.add_argument('--orientation', action='store_true', default=False,
                         help='Read a completed run_orientation_extension checkpoint.')
+    formulation.add_argument('--pointwise', action='store_false', dest='orientation',
+                             help='Read an explicitly selected pointwise initializer.')
     parser.add_argument('--stress-paths-only', action='store_true',
                         help='Query the existing fixed locations without regenerating the field grid.')
     args = parser.parse_args()
-    export(args.run.resolve(), (args.checkpoint or args.run/'model.pt').resolve(),
+    checkpoint_name = 'model.pt' if args.orientation else 'model.pt'
+    export(args.run.resolve(), (args.checkpoint or args.run/checkpoint_name).resolve(),
            args.output.resolve(), args.device, args.stress_paths_only, args.orientation)

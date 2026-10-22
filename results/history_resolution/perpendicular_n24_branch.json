@@ -1,0 +1,15 @@
+{
+  "minimum_h": 0.07607915580912217,
+  "epsilon": 0.005,
+  "radius_over_a": 1.0049828763606232,
+  "angle_deg": 41.615871626843244,
+  "search_radius_over_a": [
+    1.0,
+    1.05
+  ],
+  "search_angle_deg": [
+    40.0,
+    46.0
+  ],
+  "checkpoint": "perpendicular_n24/model.pt"
+}

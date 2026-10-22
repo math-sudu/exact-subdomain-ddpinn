@@ -1,0 +1,177 @@
+{
+  "checkpoint": "results/orientation_expanded/bedding_crossed/model.pt",
+  "settings": {
+    "question": "Resolve the final crossed increment's near-wall local return with 96 radial and 512 angular integration points; steps 1\u201311 retain their solved fields.",
+    "hidden": [
+      64,
+      64,
+      64,
+      64
+    ],
+    "radius": 4,
+    "load_steps": 12,
+    "representation": "spectral",
+    "constitutive_update": "joint_return",
+    "equilibrium_form": "virtual_work",
+    "projection": {
+      "radial_order": 40,
+      "angular_modes": 64,
+      "angular_samples": 256,
+      "centrosymmetric": true
+    },
+    "elastic_prefix": "circular",
+    "plastic_initialization": "preceding_trained_increment",
+    "quadrature": {
+      "radial": 96,
+      "angular": 512,
+      "boundary": 1024,
+      "stagger_angles": true,
+      "radial_power": 1
+    },
+    "weights": {
+      "equilibrium": 3.285697128825039,
+      "wall": 3.0928172158086884,
+      "interface": 5.076251850402668,
+      "constitutive": 5.703692056986043,
+      "complementarity": 100,
+      "gauge": 1,
+      "virtual_work": 47.12388980384689
+    },
+    "interface_metric": "compliance",
+    "trust_region": {
+      "evaluations_per_solve": 12,
+      "linear_iterations": 600,
+      "polish_evaluations": 0,
+      "gradient_reduction": 0.1
+    },
+    "physics": {
+      "matrix_cohesion_mpa": 2,
+      "matrix_phi_deg": 32.5,
+      "matrix_psi_deg": 2.5,
+      "joint_cohesion_mpa": 0.2,
+      "joint_phi_deg": 25,
+      "joint_psi_deg": 0,
+      "matrix_smoothing_mpa": 0.01,
+      "joint_smoothing_mpa": 0.01,
+      "complementarity_smoothing": 1e-08
+    },
+    "cases": [
+      {
+        "name": "bedding_crossed",
+        "eh_over_ev": 2.625,
+        "bedding_dip_deg": 45,
+        "opening_axes": [
+          1,
+          1
+        ],
+        "opening_angle_deg": 0,
+        "joint_normal_deg": 45
+      }
+    ]
+  },
+  "final_gauges": [
+    {
+      "case": "bedding_crossed",
+      "load_step": 12,
+      "gauge_deg": 0.0,
+      "joint_positive_mm": 0.0052717569837028196,
+      "joint_negative_mm": 0.05620617340453356,
+      "matrix_mm": 0.0,
+      "source_total_mm": 0.06147793038823657,
+      "retained_mm": 0.20159517227989168,
+      "elastic_mm": 0.13998618052079728,
+      "imbalance_mm": 0.00013106137085783232
+    },
+    {
+      "case": "bedding_crossed",
+      "load_step": 12,
+      "gauge_deg": 90.0,
+      "joint_positive_mm": 0.005749032454407907,
+      "joint_negative_mm": 0.048261101254996906,
+      "matrix_mm": 0.0,
+      "source_total_mm": 0.05401013370940486,
+      "retained_mm": 0.5137451552810185,
+      "elastic_mm": 0.46018359769963374,
+      "imbalance_mm": -0.00044857612802010755
+    },
+    {
+      "case": "bedding_crossed",
+      "load_step": 12,
+      "gauge_deg": 104.0,
+      "joint_positive_mm": 0.005555472810597898,
+      "joint_negative_mm": 0.04712692706519941,
+      "matrix_mm": 0.0,
+      "source_total_mm": 0.05268239987579742,
+      "retained_mm": 0.535358175141481,
+      "elastic_mm": 0.4827912636631827,
+      "imbalance_mm": -0.0001154883974991347
+    }
+  ],
+  "final_near_field": {
+    "maximum_slip_percent": 0.3481949802483333,
+    "peak_slip_angle_deg": 216.0,
+    "maximum_diameter_mm": 0.5353953895762479,
+    "peak_diameter_angle_deg": 104.5,
+    "vertical_side_share": 0.8334943002000347,
+    "vertical_last_third_share": 0.7138811854530509,
+    "source_integration": {
+      "radial": 96,
+      "angular": 512
+    }
+  },
+  "exterior": {
+    "maximum_joint_yield_mpa": -0.1913656706891142,
+    "radii_over_a": [
+      4.0,
+      4.01,
+      4.025,
+      4.05,
+      4.1,
+      4.15,
+      4.248508707450764,
+      4.25,
+      4.5,
+      4.512456559321239,
+      4.7928027460674,
+      5.09056604994032,
+      5.406828547256172,
+      5.742739540677803,
+      6.099519735797861,
+      6.478465677201248,
+      6.880954460127603,
+      7.308448734856072,
+      7.762502021998385,
+      8.244764358016075,
+      8.75698829147775,
+      9.301035251846901,
+      9.878882313944517,
+      10.492629382668657,
+      11.14450682408038,
+      11.836883570587487,
+      12.572275729680456,
+      13.35335572750483,
+      14.182962020497952,
+      15.064109410382253,
+      16.0
+    ],
+    "angular_samples": 720,
+    "far_field_joint_yield_mpa": -0.4093614972304986
+  },
+  "computation": {
+    "recomputed_steps": 9,
+    "evaluations": 221,
+    "recorded_solve_seconds": 2149.1344310999266,
+    "stopping": "Per-step optimizer status and any recorded response tolerance are retained; a missing tolerance is not retrospectively assigned.",
+    "final_trust_status_by_step": {
+      "4": 1,
+      "5": 1,
+      "6": 0,
+      "7": 0,
+      "8": 0,
+      "9": 0,
+      "10": 1,
+      "11": 0,
+      "12": null
+    }
+  }
+}

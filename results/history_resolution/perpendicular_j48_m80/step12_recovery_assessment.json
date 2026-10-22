@@ -1,0 +1,106 @@
+{
+  "checkpoint": "final_guarded_candidate.pt",
+  "meaning": "Retained step-12 field installed as model.pt after independent replay and the local branch search.",
+  "branch": {
+    "minimum_h": 0.005148936166863843,
+    "epsilon": 0.005,
+    "radius_over_a": 1.0257746331635116,
+    "angle_deg": 44.250035313157376,
+    "search_radius_over_a": [
+      1.0,
+      1.08
+    ],
+    "search_angle_deg": [
+      38.0,
+      48.0
+    ]
+  },
+  "final_gauges": [
+    {
+      "case": "bedding_crossed",
+      "load_step": 12,
+      "gauge_deg": 0.0,
+      "joint_positive_mm": 0.005974463311078945,
+      "joint_negative_mm": 0.058479881776399546,
+      "matrix_mm": 0.0,
+      "source_total_mm": 0.06445434508747847,
+      "retained_mm": 0.20548259128891713,
+      "elastic_mm": 0.13998618052079728,
+      "imbalance_mm": 0.0010420656806413853
+    },
+    {
+      "case": "bedding_crossed",
+      "load_step": 12,
+      "gauge_deg": 90.0,
+      "joint_positive_mm": 0.006877754916063763,
+      "joint_negative_mm": 0.05181558053149847,
+      "matrix_mm": 0.0,
+      "source_total_mm": 0.05869333544756215,
+      "retained_mm": 0.5192315437186779,
+      "elastic_mm": 0.46018359769963374,
+      "imbalance_mm": 0.0003546105714819642
+    },
+    {
+      "case": "bedding_crossed",
+      "load_step": 12,
+      "gauge_deg": 104.0,
+      "joint_positive_mm": 0.006197616984239891,
+      "joint_negative_mm": 0.04989910838095065,
+      "matrix_mm": 0.0,
+      "source_total_mm": 0.05609672536519049,
+      "retained_mm": 0.5397168836007059,
+      "elastic_mm": 0.4827912636631827,
+      "imbalance_mm": 0.0008288945723327196
+    }
+  ],
+  "assessment": {
+    "case": "bedding_crossed",
+    "step": 12,
+    "phase": "constrained_head_assessment",
+    "equilibrium_form": "virtual_work",
+    "evaluations": 0,
+    "elapsed_s": 0.0,
+    "objective": 0.006743992731187414,
+    "completed": false,
+    "trust_solves": 0,
+    "initial_correction_scale": 1.0,
+    "trust_status": null,
+    "primal_optimality": null,
+    "equilibrium_rms": 0.6748377465420534,
+    "constitutive_rms": 1.5527527205029571e-15,
+    "complementarity_rms": 2.7336689094918244e-15,
+    "wall_traction_rms_mpa": 0.023714155293828226,
+    "constitutive_retained_angular_rms_mpa": 2.1944036398276762e-16,
+    "constitutive_unretained_angular_rms_mpa": 2.613279850684831e-16,
+    "principal_point": {
+      "radius": 1.0004657441751539,
+      "angle_deg": 45.0,
+      "equilibrium_mpa_per_m": [
+        128.80861335155726,
+        -232.66780040572075
+      ],
+      "constitutive_mpa": [
+        0.0,
+        -5.773159728050814e-15,
+        -1.7763568394002505e-15,
+        -1.7763568394002505e-15
+      ],
+      "joint_yield_mpa": -0.10199098835048381
+    },
+    "minimum_yy_constitutive_mpa": -5.617728504603292e-14,
+    "nonelastic_0_mm": 0.06549641076811984,
+    "source_training_0_mm": 0.06446168599664329,
+    "residual_projection_0_mm": 0.0010347247714764959,
+    "nonelastic_90_mm": 0.05904794601904417,
+    "source_training_90_mm": 0.05870387438200438,
+    "residual_projection_90_mm": 0.0003440716370397412,
+    "maximum_matrix_yield_mpa": -0.35943535785859937,
+    "maximum_joint_yield_mpa": 7.771561172376096e-16,
+    "interface_traction_rms_mpa": 0.003929563401633958,
+    "active_area_fraction": 0.04622131121296445,
+    "active_radius_range": [
+      1.0004657441751537,
+      3.093696474743363
+    ]
+  }
+}

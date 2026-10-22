@@ -1,0 +1,64 @@
+{
+  "checkpoint": "results/late_step_continuation/perpendicular_space/model.pt",
+  "search": "Differential evolution of affine h-delta, seed 1729, followed by strict complete-prefix query at the minimum",
+  "rows": [
+    {
+      "search_radius_over_a": [
+        1,
+        1.08
+      ],
+      "search_angle_deg": [
+        38,
+        48
+      ],
+      "minimum_branch_margin": 0.010236749717009814,
+      "minimum_h": 0.015236749717009813,
+      "radius_over_a": 1.0087216061587279,
+      "angle_deg": 43.18781909880029,
+      "strict_prefix_query": "passed",
+      "normal_stress_history_mpa": [
+        -1.3778737994199042,
+        -1.2557475988398086,
+        -1.1336213982597125,
+        -1.0096193988143922,
+        -0.8890972967937132,
+        -0.7638352321673414,
+        -0.6365551075361446,
+        -0.5472986530723094,
+        -0.4096132414077511,
+        -0.21722903082705924,
+        0.17647775562163126,
+        0.38499582287860945
+      ]
+    },
+    {
+      "search_radius_over_a": [
+        1.3,
+        1.6
+      ],
+      "search_angle_deg": [
+        42,
+        49
+      ],
+      "minimum_branch_margin": 0.0039137590750424585,
+      "minimum_h": 0.008913759075042459,
+      "radius_over_a": 1.5003773641786577,
+      "angle_deg": 45.96125992684462,
+      "strict_prefix_query": "passed",
+      "normal_stress_history_mpa": [
+        -1.4358448666350299,
+        -1.3716897332700597,
+        -1.3075345999050891,
+        -1.2412257144705696,
+        -1.1619419261683073,
+        -1.079922817291354,
+        -0.9884790514351343,
+        -0.879797324151897,
+        -0.769659352322366,
+        -0.7474989768783179,
+        0.4033219388796727,
+        0.41211521725864064
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "checkpoint": "results/history_resolution/perpendicular_n24/model.pt",
+  "completed_steps": 24,
+  "displacement_space": {
+    "radial_order": 40,
+    "angular_modes": 64,
+    "angular_samples": 256,
+    "centrosymmetric": true
+  },
+  "test_space": {
+    "radial_order": 48,
+    "angular_modes": 80
+  },
+  "integration": {
+    "radial": 96,
+    "angular": 512
+  },
+  "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+  "rows": [
+    {
+      "load_step": 24,
+      "residual_dual_norm": 0.08209317977359397,
+      "source_dual_norm": 1.7286566477575946,
+      "relative_residual_to_source": 0.04748958092984217
+    }
+  ]
+}

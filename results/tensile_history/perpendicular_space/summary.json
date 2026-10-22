@@ -1,0 +1,208 @@
+{
+  "checkpoint": "results/history_resolution/perpendicular_j48_m80/model.pt",
+  "case": {
+    "name": "bedding_crossed",
+    "eh_over_ev": 2.625,
+    "bedding_dip_deg": 45,
+    "opening_axes": [
+      1,
+      1
+    ],
+    "opening_angle_deg": 0,
+    "joint_normal_deg": 45
+  },
+  "completed_steps": 12,
+  "queried_steps": 12,
+  "pending_step": null,
+  "integration": {
+    "radial": 96,
+    "angular": 512,
+    "angular_shift": 0
+  },
+  "normal_stress_sign": "tension positive",
+  "coupling_b": 6.471318733033948e-17,
+  "tensile_intercept_mpa": 0.42890138410191175,
+  "rounding_width_mpa": 0.01,
+  "near_apex_lower_normal_stress_mpa": 0.40745631489681616,
+  "region_definitions": {
+    "compression": "sigma_n <= 0",
+    "tension": "0 < sigma_n < (c-delta)/tan(phi)",
+    "near_apex": "sigma_n >= (c-delta)/tan(phi); remaining shear strength is at most the rounding width"
+  },
+  "source_definitions": {
+    "history": "Each increment is assigned by its own returned normal stress, then summed in load order.",
+    "state_region": "All preceding plastic increments at points belonging to the region in the queried state.",
+    "signs": "Positive/negative denote gauge work, not slip sign; their sum is the net contribution.",
+    "interpretation": "Source accounting in the retained coupled history, not a change of constitutive model or a re-equilibrated deletion experiment."
+  },
+  "final_state": {
+    "load_step": 12,
+    "release_fraction": 1.0,
+    "maximum_normal_stress_mpa": 0.4282214682237844,
+    "apex_normal_margin_mpa": 0.0006799158781273795,
+    "maximum_normal_radius_over_a": 1.0262241046554779,
+    "maximum_normal_angle_deg": 44.296875,
+    "minimum_h": 0.005158524990435995,
+    "minimum_h_radius_over_a": 1.0262241046554779,
+    "minimum_h_angle_deg": 44.296875
+  },
+  "final_regions": [
+    {
+      "load_step": 12,
+      "region": "compression",
+      "area_over_a2": 46.940489447185385,
+      "annulus_area_fraction": 0.9961081235563339,
+      "minimum_radius_over_a": 1.0004657441751539,
+      "maximum_radius_over_a": 3.999534255824847
+    },
+    {
+      "load_step": 12,
+      "region": "tension",
+      "area_over_a2": 0.18248476518934914,
+      "annulus_area_fraction": 0.003872446989179833,
+      "minimum_radius_over_a": 1.0004657441751539,
+      "maximum_radius_over_a": 1.8617815173890493
+    },
+    {
+      "load_step": 12,
+      "region": "near_apex",
+      "area_over_a2": 0.0009155914721586436,
+      "annulus_area_fraction": 1.942945448624448e-05,
+      "minimum_radius_over_a": 1.0262241046554779,
+      "maximum_radius_over_a": 1.0262241046554779
+    }
+  ],
+  "final_sources": [
+    {
+      "load_step": 12,
+      "gauge_deg": 0.0,
+      "region": "compression",
+      "increment_net_mm": 0.02151755673922328,
+      "history_net_mm": 0.06499279152212384,
+      "history_positive_mm": 0.08907635801754446,
+      "history_negative_mm": -0.02408356649542069,
+      "state_region_net_mm": 0.06344109852486181,
+      "state_region_positive_mm": 0.08743079963946507,
+      "state_region_negative_mm": -0.023989701114603003
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 90.0,
+      "region": "compression",
+      "increment_net_mm": 0.017269753492891508,
+      "history_net_mm": 0.057127401952218285,
+      "history_positive_mm": 0.0585531019908512,
+      "history_negative_mm": -0.0014257000386329057,
+      "state_region_net_mm": 0.05592469356551362,
+      "state_region_positive_mm": 0.0573308631190515,
+      "state_region_negative_mm": -0.001406169553537887
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 104.0,
+      "region": "compression",
+      "increment_net_mm": 0.015373388201694017,
+      "history_net_mm": 0.0552596201465263,
+      "history_positive_mm": 0.05558542007239088,
+      "history_negative_mm": -0.0003257999258645867,
+      "state_region_net_mm": 0.05400517017224129,
+      "state_region_positive_mm": 0.05432544728582128,
+      "state_region_negative_mm": -0.00032027711357994037
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 0.0,
+      "region": "tension",
+      "increment_net_mm": 0.00017313644072444972,
+      "history_net_mm": -0.0005233330012400735,
+      "history_positive_mm": 0.0005548059016968992,
+      "history_negative_mm": -0.001078138902936973,
+      "state_region_net_mm": 0.001004418090426861,
+      "state_region_positive_mm": 0.0021955394633387144,
+      "state_region_negative_mm": -0.0011911213729118508
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 90.0,
+      "region": "tension",
+      "increment_net_mm": 0.00057724736659302,
+      "history_net_mm": 0.0015386100995685636,
+      "history_positive_mm": 0.0015926848174712103,
+      "history_negative_mm": -5.407471790264644e-05,
+      "state_region_net_mm": 0.002758374737110028,
+      "state_region_positive_mm": 0.0028301759605831103,
+      "state_region_negative_mm": -7.180122347308306e-05
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 104.0,
+      "region": "tension",
+      "increment_net_mm": 0.00042918396890285186,
+      "history_net_mm": 0.0008243990603399846,
+      "history_positive_mm": 0.0008612750117111445,
+      "history_negative_mm": -3.687595137115975e-05,
+      "state_region_net_mm": 0.0020790188924524233,
+      "state_region_positive_mm": 0.002121121863029833,
+      "state_region_negative_mm": -4.210297057740875e-05
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 0.0,
+      "region": "near_apex",
+      "increment_net_mm": 5.887607627904777e-06,
+      "history_net_mm": -1.5113433405037937e-05,
+      "history_positive_mm": 9.217445259606373e-06,
+      "history_negative_mm": -2.433087866464431e-05,
+      "state_region_net_mm": 8.828472189755213e-06,
+      "state_region_positive_mm": 1.4042261697220272e-05,
+      "state_region_negative_mm": -5.213789507465058e-06
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 90.0,
+      "region": "near_apex",
+      "increment_net_mm": 5.928127518389254e-06,
+      "history_net_mm": 2.7323395775503417e-05,
+      "history_positive_mm": 3.1622613382140994e-05,
+      "history_negative_mm": -4.299217606637578e-06,
+      "state_region_net_mm": 1.0267144938578646e-05,
+      "state_region_positive_mm": 1.637034206979921e-05,
+      "state_region_negative_mm": -6.103197131220563e-06
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 104.0,
+      "region": "near_apex",
+      "increment_net_mm": 7.663281616273931e-06,
+      "history_net_mm": 1.270615832415508e-05,
+      "history_positive_mm": 1.344582143247198e-05,
+      "history_negative_mm": -7.396631083169016e-07,
+      "state_region_net_mm": 1.2536300496798912e-05,
+      "state_region_positive_mm": 1.357175668351301e-05,
+      "state_region_negative_mm": -1.035456186714098e-06
+    }
+  ],
+  "final_gauges": [
+    {
+      "load_step": 12,
+      "gauge_deg": 0.0,
+      "retained_mm": 0.20548259128891713,
+      "source_total_mm": 0.06445434508747873,
+      "imbalance_mm": 0.0010420656806411216
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 90.0,
+      "retained_mm": 0.5192315437186779,
+      "source_total_mm": 0.058693335447562354,
+      "imbalance_mm": 0.00035461057148176295
+    },
+    {
+      "load_step": 12,
+      "gauge_deg": 104.0,
+      "retained_mm": 0.5397168836007059,
+      "source_total_mm": 0.05609672536519044,
+      "imbalance_mm": 0.0008288945723327126
+    }
+  ]
+}

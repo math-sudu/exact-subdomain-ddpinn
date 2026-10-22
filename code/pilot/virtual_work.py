@@ -15,6 +15,7 @@ from decompose_eigenstrain_response import FrozenSourceOperator
 class VirtualWorkMetric:
     def __init__(self, stiffness, impedance, settings, points):
         projection = settings["projection"]
+        tests = settings.get("work_test_space", projection)
         if settings.get("elastic_prefix") != "circular" or not projection.get("centrosymmetric"):
             raise ValueError("The correction work metric requires the circular background and parity")
         nr, nt = (settings["quadrature"][name] for name in ("radial", "angular"))
@@ -22,7 +23,7 @@ class VirtualWorkMetric:
             raise ValueError("The work metric uses Gauss integration in the physical radius")
         self.operator = FrozenSourceOperator(
             stiffness.detach().cpu().numpy(), impedance, settings["radius"],
-            projection["radial_order"], projection["angular_modes"], nr, nt)
+            tests["radial_order"], tests["angular_modes"], nr, nt)
         op = self.operator
         self.nr, self.nt = nr, nt
         self.stiffness = stiffness
@@ -52,6 +53,12 @@ class VirtualWorkMetric:
 
     def correction_vector(self, coefficients):
         """Convert the physical positive-frequency u coefficients to both signs."""
+        radial_pad = self.operator.j + 1 - coefficients.shape[0]
+        angular_pad = self.operator.m + 1 - coefficients.shape[1]
+        if radial_pad < 0 or angular_pad < 0:
+            raise ValueError("Work tests must contain the displacement projection")
+        if radial_pad or angular_pad:
+            coefficients = torch.nn.functional.pad(coefficients, (0, 0, 0, angular_pad, 0, radial_pad))
         values = coefficients[:, self.modes.abs(), :2].permute(1, 0, 2)
         values = torch.where(self.modes[:, None, None] < 0, values.conj(), values)
         return values.reshape(-1)

@@ -178,15 +178,16 @@ class NeuralCoordinates:
         increment.requires_grad_(True)
         self.base = increment.coefficients().detach().clone()
         self.mapping = self.CoefficientMap(increment)
-        if channels not in ("all", "stress", "displacement"):
+        if channels not in ("all", "stress", "displacement", "displacement_head"):
             raise ValueError(channels)
         self.parameters = {name: p.detach().clone() for name, p in self.mapping.named_parameters()
                            if channels=="all" or (channels=="stress" and name.startswith("increment.stress"))
-                           or (channels=="displacement" and name.startswith("increment.kinematic"))}
+                           or (channels=="displacement" and name.startswith("increment.kinematic"))
+                           or (channels=="displacement_head" and name.startswith("increment.kinematic_head."))}
         self.indices = {}
         for name, value in self.parameters.items():
             mask = torch.ones_like(value, dtype=torch.bool)
-            if channels == "displacement" and name.startswith("increment.kinematic_head."):
+            if channels.startswith("displacement") and name.startswith("increment.kinematic_head."):
                 mask[2:] = False
             if increment.centrosymmetric and name == "increment.kinematic_head.bias":
                 mask[:2] = False  # Constant displacements vanish under odd parity.
@@ -254,7 +255,7 @@ def column_scale(reverse, value, coordinates, samples=32):
 
 
 def trust_region(function, point, scale, *, linear_iterations, evaluations, callback=None,
-                 gradient_tolerance=None):
+                 gradient_tolerance=None, linear_tolerance=1e-6):
     """Use SciPy's regularized LSMR trust-region step on the actual residual."""
     from scipy.optimize import least_squares
 
@@ -270,7 +271,7 @@ def trust_region(function, point, scale, *, linear_iterations, evaluations, call
                    dict(ftol=None, xtol=None, gtol=gradient_tolerance))
     return least_squares(residual, point.cpu().numpy(), jac=jacobian,
         method="trf", tr_solver="lsmr", x_scale=scale.cpu().numpy(),
-        tr_options=dict(maxiter=linear_iterations, atol=1e-6, btol=1e-6),
+        tr_options=dict(maxiter=linear_iterations, atol=linear_tolerance, btol=linear_tolerance),
         max_nfev=evaluations, callback=callback, **termination)
 
 
@@ -283,15 +284,18 @@ def neural_primal_step(problem, controls, inner_state, callback=None):
     coordinates = NeuralCoordinates(problem.current, getattr(problem, "neural_channels", "all"))
     point = coordinates.zero()
     function = lambda delta: problem(coordinates(delta))
+    _, value, reverse = linear_operator(function, point, torch.ones_like(point))
     if not inner_state:
-        _, value, reverse = linear_operator(function, point, torch.ones_like(point))
         gradient = reverse(value)[0]
         initial = float(gradient.detach().abs().max())
-        inner_state.update(scale=column_scale(reverse, value, point).cpu(),
-                           initial_optimality=initial,
+        inner_state.update(initial_optimality=initial,
                            gradient_tolerance=max(controls["gradient_reduction"]*initial,
                                                   10*np.finfo(np.float64).eps))
-        del gradient, value, reverse
+        del gradient
+    # Newly activated neural features need their current Jacobian scale.
+    # Preserve the inner solve's original gradient stopping target.
+    inner_state["scale"] = column_scale(reverse, value, point).cpu()
+    del value, reverse
 
     def accepted(intermediate_result):
         coordinates.apply(point.new_tensor(intermediate_result.x))
@@ -301,7 +305,8 @@ def neural_primal_step(problem, controls, inner_state, callback=None):
     fit = trust_region(function, point, inner_state["scale"].to(point),
         linear_iterations=controls["linear_iterations"],
         evaluations=controls["evaluations_per_solve"], callback=accepted,
-        gradient_tolerance=inner_state["gradient_tolerance"])
+        gradient_tolerance=inner_state["gradient_tolerance"],
+        linear_tolerance=controls.get("linear_tolerance", 1e-6))
     polish_limit = controls.get("polish_evaluations", 0)
     if fit.status == 0 and polish_limit:
         from .lbfgs import budgeted_lbfgs_step

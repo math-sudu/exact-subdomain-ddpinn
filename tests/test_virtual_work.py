@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 
 import numpy as np
+import pytest
 import torch
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -14,10 +15,12 @@ from pilot import config as C
 from pilot.virtual_work import VirtualWorkMetric
 
 
-def setup():
+def setup(enriched=False):
     settings = json.loads((ROOT/"configs/orientation_spectral.json").read_text())
     settings["projection"].update(radial_order=4, angular_modes=6, angular_samples=32)
     settings["quadrature"].update(radial=8, angular=32, boundary=64)
+    if enriched:
+        settings["work_test_space"] = dict(radial_order=6, angular_modes=10)
     case = settings["cases"][0]
     pts, c, _, _ = geometry(case, settings, "cpu")
     material = C.material(case["eh_over_ev"], case["bedding_dip_deg"])
@@ -42,8 +45,9 @@ def test_staggered_load_matches_unshifted_work_including_plastic_zz():
     torch.testing.assert_close(actual, torch.tensor(expected.ravel()), atol=2e-12, rtol=2e-12)
 
 
-def test_energy_equals_work_of_represented_error_and_differentiates_both_routes():
-    metric, pts = setup()
+@pytest.mark.parametrize("enriched", [False, True])
+def test_energy_equals_work_of_represented_error_and_differentiates_both_routes(enriched):
+    metric, pts = setup(enriched)
     generator = torch.Generator().manual_seed(71)
     raw = torch.randn((5, 7, 2, 2), generator=generator, dtype=torch.float64)
     raw.requires_grad_()
@@ -70,8 +74,9 @@ def test_energy_equals_work_of_represented_error_and_differentiates_both_routes(
         assert gradient.norm() > 0
 
 
-def test_exact_elastic_history_has_zero_work_residual():
-    metric, pts = setup()
+@pytest.mark.parametrize("enriched", [False, True])
+def test_exact_elastic_history_has_zero_work_residual(enriched):
+    metric, pts = setup(enriched)
     coefficients = torch.zeros((5, 7, 2), dtype=torch.complex128)
     source = torch.zeros((pts.n_pde, 4), dtype=torch.float64)
     assert metric(coefficients, source).item() == 0

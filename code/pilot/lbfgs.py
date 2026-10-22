@@ -10,7 +10,7 @@ import torch
 # PyTorch 2.2.2's strong-Wolfe search performs at most 26 closure calls in
 # one line search. ``LBFGS.step`` checks max_eval only after that search, so a
 # step can overshoot max_eval by 25 calls. Reserve that overshoot before the
-# final chunk instead of letting the frozen experiment budget be exceeded.
+# final chunk to stay within the configured evaluation budget.
 _STRONG_WOLFE_MAX_OVERSHOOT = 25
 _MIN_SAFE_STEP_EVALS = 1 + 26
 

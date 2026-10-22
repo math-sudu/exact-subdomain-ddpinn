@@ -140,6 +140,7 @@ def run_return_case(case, settings, destination, through_step, device, *,
         if model.n_steps < step:
             model.append_increment(copy_previous=True)
             saved.update(evaluations=0, step_elapsed_s=0.,
+                         initial_correction_scale=1.,
                          trust_region_state=dict(solves=0, inner={}, last_result={}))
         freeze_history(model)
         problem = ReturnedOrientationResidual(model, saved, bundle["params"])
@@ -148,6 +149,9 @@ def run_return_case(case, settings, destination, through_step, device, *,
         state = saved["trust_region_state"]
         evaluations, elapsed = saved["evaluations"], saved["step_elapsed_s"]
         started = time.perf_counter()
+        initial_scale = saved.get("initial_correction_scale", 1.)
+        if evaluations == 0 and state["solves"] == 0:
+            initial_scale *= problem.scale_initial_correction(current)
 
         def record(is_complete=False):
             with torch.no_grad():
@@ -158,6 +162,7 @@ def run_return_case(case, settings, destination, through_step, device, *,
                 equilibrium_form=problem.equilibrium_form,
                 evaluations=evaluations, elapsed_s=elapsed+time.perf_counter()-started,
                 objective=objective_value, completed=is_complete, trust_solves=state["solves"],
+                initial_correction_scale=initial_scale,
                 trust_status=state["last_result"].get("status"),
                 primal_optimality=state["last_result"].get("optimality"), **assessment)
             rows.append(row)
@@ -165,8 +170,12 @@ def run_return_case(case, settings, destination, through_step, device, *,
             payload = dict(case=case, settings=settings, model=cpu_state(model),
                 model_steps=model.n_steps, completed_steps=step if is_complete else step-1,
                 evaluations=evaluations, step_elapsed_s=row["elapsed_s"], rows=rows,
+                initial_correction_scale=initial_scale,
                 c=problem.c.cpu(), s0=problem.s0.cpu(), trust_region_state=state,
                 initialization_checkpoint=saved["initialization_checkpoint"])
+            payload.update({key: saved[key] for key in ("predictor_restarts", "constrained_head_solves",
+                                                       "work_test_enrichment", "network_widening")
+                            if key in saved})
             save(checkpoint, payload)
             print(json.dumps(row), flush=True)
 
@@ -478,8 +487,10 @@ def run_case(case, settings, destination, through_step, device, *, trust_blocks=
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--config", type=Path, default=ROOT / "configs/orientation_extension.json")
-    parser.add_argument("--output", type=Path, default=ROOT / "results/orientation_extension")
+    parser.add_argument("--config", type=Path,
+                        help="Override the saved settings; a new output root uses the common formulation by default.")
+    parser.add_argument("--output", type=Path,
+                        help="New history root; omitted arguments select each current manuscript checkpoint and its settings.")
     parser.add_argument("--case")
     parser.add_argument("--through-step", type=int, default=12)
     parser.add_argument("--device", default="cuda")
@@ -493,10 +504,16 @@ def main():
                         help="Initialize local-return training from a pending or completed mixed onset checkpoint.")
     args = parser.parse_args()
     torch.set_num_threads(args.threads)
-    settings = json.loads(args.config.read_text(encoding="utf-8"))
+    from current_histories import HISTORIES
+    config_path = args.config or ROOT / "configs/orientation_extension.json"
+    settings = json.loads(config_path.read_text(encoding="utf-8"))
     for case in settings["cases"]:
         if args.case is None or case["name"] == args.case:
-            completed = run_case(case, settings, args.output / case["name"], args.through_step, args.device,
+            destination = args.output / case["name"] if args.output is not None else HISTORIES[case["name"]]
+            case_settings = settings
+            if args.config is None and args.output is None:
+                case_settings = torch.load(destination / "model.pt", map_location="cpu", weights_only=False)["settings"]
+            completed = run_case(case, case_settings, destination, args.through_step, args.device,
                                  trust_blocks=args.trust_blocks, accept_step=args.accept_step,
                                  initialize_checkpoint=args.initialize_checkpoint)
             print(json.dumps(dict(case=case["name"], completed_steps=completed)), flush=True)

@@ -1,0 +1,1234 @@
+[
+  {
+    "step": 3,
+    "minimum_prefix_branch_margin": 0.36238549617688187,
+    "wall_vector_rms_mpa": 0.0004305629789857724,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": 1.0991767994484362e-07,
+    "nonelastic_0_mm": 4.284281276713463e-06,
+    "gauge_imbalance_0_mm": 4.174363596768619e-06,
+    "source_90_mm": 1.8357020050838275e-06,
+    "nonelastic_90_mm": 6.77707284602036e-06,
+    "gauge_imbalance_90_mm": 4.941370840936532e-06,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 3,
+    "minimum_prefix_branch_margin": 0.3623958685125195,
+    "wall_vector_rms_mpa": 0.00040302949423831765,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": 1.0706402822265172e-07,
+    "nonelastic_0_mm": 1.1245357539707832e-06,
+    "gauge_imbalance_0_mm": 1.0174717257481315e-06,
+    "source_90_mm": 1.936159532213325e-06,
+    "nonelastic_90_mm": 2.5195536662739726e-06,
+    "gauge_imbalance_90_mm": 5.833941340606475e-07,
+    "evaluations": 24,
+    "optimizer_status": 0,
+    "response_change_mm": 4.257519179746387e-06,
+    "enriched_relative_residual": 1.983615782598599,
+    "enriched_residual_dual_norm": 0.0005629934045609672,
+    "enriched_source_dual_norm": 0.0002838218013285961,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 4,
+    "minimum_prefix_branch_margin": 0.3329321629677449,
+    "wall_vector_rms_mpa": 0.011525335915855745,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.00017524479169686108,
+    "nonelastic_0_mm": 0.00032711919658178797,
+    "gauge_imbalance_0_mm": 0.000502363988278649,
+    "source_90_mm": 0.0005506663962028639,
+    "nonelastic_90_mm": 0.00035812789154028514,
+    "gauge_imbalance_90_mm": -0.00019253850466257878,
+    "evaluations": 10,
+    "optimizer_status": 1,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 4,
+    "minimum_prefix_branch_margin": 0.33388022752692037,
+    "wall_vector_rms_mpa": 0.0036353169981143555,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.00031561284664861737,
+    "nonelastic_0_mm": 8.889209700177613e-05,
+    "gauge_imbalance_0_mm": 0.0004045049436503935,
+    "source_90_mm": 0.000712782499737019,
+    "nonelastic_90_mm": 0.0007211084753659524,
+    "gauge_imbalance_90_mm": 8.325975628933327e-06,
+    "evaluations": 22,
+    "optimizer_status": 0,
+    "response_change_mm": 0.0003629805838256672,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 4,
+    "minimum_prefix_branch_margin": 0.3334390087754816,
+    "wall_vector_rms_mpa": 0.0019143932943116772,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.00044545773916366876,
+    "nonelastic_0_mm": -0.0003424757401145154,
+    "gauge_imbalance_0_mm": 0.00010298199904915334,
+    "source_90_mm": 0.0008027508504029826,
+    "nonelastic_90_mm": 0.0008222925752535534,
+    "gauge_imbalance_90_mm": 1.9541724850570823e-05,
+    "evaluations": 34,
+    "optimizer_status": 0,
+    "response_change_mm": 0.00043136783711629153,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 4,
+    "minimum_prefix_branch_margin": 0.33343211698400527,
+    "wall_vector_rms_mpa": 0.0012465950151835322,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0004793678470733585,
+    "nonelastic_0_mm": -0.00043959057869722535,
+    "gauge_imbalance_0_mm": 3.9777268376133175e-05,
+    "source_90_mm": 0.0008377888259022266,
+    "nonelastic_90_mm": 0.0008414193598152298,
+    "gauge_imbalance_90_mm": 3.6305339130032364e-06,
+    "evaluations": 46,
+    "optimizer_status": 0,
+    "response_change_mm": 9.711483858270992e-05,
+    "enriched_relative_residual": 0.04120384899709864,
+    "enriched_residual_dual_norm": 0.001582320652795063,
+    "enriched_source_dual_norm": 0.03840225346196375,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 5,
+    "minimum_prefix_branch_margin": 0.30430312578548974,
+    "wall_vector_rms_mpa": 0.002595374152874725,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0017875054476703886,
+    "nonelastic_0_mm": -0.0017337042677442237,
+    "gauge_imbalance_0_mm": 5.380117992616492e-05,
+    "source_90_mm": 0.003433097785617764,
+    "nonelastic_90_mm": 0.003438113070002894,
+    "gauge_imbalance_90_mm": 5.015284385130169e-06,
+    "evaluations": 11,
+    "optimizer_status": 1,
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 5,
+    "minimum_prefix_branch_margin": 0.3042253298823194,
+    "wall_vector_rms_mpa": 0.002263920920131753,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0019273644760971049,
+    "nonelastic_0_mm": -0.0018679610353866671,
+    "gauge_imbalance_0_mm": 5.9403440710437735e-05,
+    "source_90_mm": 0.0034665952628967285,
+    "nonelastic_90_mm": 0.003462821817510659,
+    "gauge_imbalance_90_mm": -3.773445386069489e-06,
+    "evaluations": 23,
+    "optimizer_status": 0,
+    "response_change_mm": 0.00013985902842671627,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 5,
+    "minimum_prefix_branch_margin": 0.30414095320647827,
+    "wall_vector_rms_mpa": 0.0019404253637484983,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0021240816990908884,
+    "nonelastic_0_mm": -0.0020831282303571197,
+    "gauge_imbalance_0_mm": 4.0953468733768636e-05,
+    "source_90_mm": 0.003474147849162295,
+    "nonelastic_90_mm": 0.0034744841410330927,
+    "gauge_imbalance_90_mm": 3.362918707975823e-07,
+    "evaluations": 35,
+    "optimizer_status": 0,
+    "response_change_mm": 0.0002151671949704526,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 5,
+    "minimum_prefix_branch_margin": 0.3040905143081375,
+    "wall_vector_rms_mpa": 0.0018639048943690753,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0021285025330248907,
+    "nonelastic_0_mm": -0.0021078279311553976,
+    "gauge_imbalance_0_mm": 2.0674601869493086e-05,
+    "source_90_mm": 0.0034685873614960024,
+    "nonelastic_90_mm": 0.0034782709519842535,
+    "gauge_imbalance_90_mm": 9.683590488251091e-06,
+    "evaluations": 47,
+    "optimizer_status": 0,
+    "response_change_mm": 2.4699700798277904e-05,
+    "enriched_relative_residual": 0.016217320764178443,
+    "enriched_residual_dual_norm": 0.0020080422292202975,
+    "enriched_source_dual_norm": 0.12382083689531212,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 6,
+    "minimum_prefix_branch_margin": 0.27527113851508245,
+    "wall_vector_rms_mpa": 0.0025142397431259234,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0038115724075628303,
+    "nonelastic_0_mm": -0.003805498137058317,
+    "gauge_imbalance_0_mm": 6.07427050451333e-06,
+    "source_90_mm": 0.00763552360943962,
+    "nonelastic_90_mm": 0.007634512828230656,
+    "gauge_imbalance_90_mm": -1.010781208963911e-06,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 6,
+    "minimum_prefix_branch_margin": 0.27519491150660585,
+    "wall_vector_rms_mpa": 0.002353785386757454,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.003825570944347102,
+    "nonelastic_0_mm": -0.003804950567174638,
+    "gauge_imbalance_0_mm": 2.0620377172464108e-05,
+    "source_90_mm": 0.00764245561328034,
+    "nonelastic_90_mm": 0.007638988276177796,
+    "gauge_imbalance_90_mm": -3.4673371025438493e-06,
+    "evaluations": 15,
+    "optimizer_status": 1,
+    "response_change_mm": 1.3998536784271855e-05,
+    "enriched_relative_residual": 0.016949246900994128,
+    "enriched_residual_dual_norm": 0.004058099397962682,
+    "enriched_source_dual_norm": 0.23942653155431118,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 7,
+    "minimum_prefix_branch_margin": 0.2455054434811598,
+    "wall_vector_rms_mpa": 0.0031026744938129442,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.0053724722559017005,
+    "nonelastic_0_mm": -0.005382036716122532,
+    "gauge_imbalance_0_mm": -9.564460220831163e-06,
+    "source_90_mm": 0.013469902027984381,
+    "nonelastic_90_mm": 0.01344999738985065,
+    "gauge_imbalance_90_mm": -1.990463813373103e-05,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 7,
+    "minimum_prefix_branch_margin": 0.24605549989343536,
+    "wall_vector_rms_mpa": 0.0029451845297091194,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.005982895171590705,
+    "nonelastic_0_mm": -0.005989284966938365,
+    "gauge_imbalance_0_mm": -6.389795347660002e-06,
+    "source_90_mm": 0.013864555944172319,
+    "nonelastic_90_mm": 0.013876105979385468,
+    "gauge_imbalance_90_mm": 1.1550035213149165e-05,
+    "evaluations": 24,
+    "optimizer_status": 0,
+    "response_change_mm": 0.0006104229156890049,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 7,
+    "minimum_prefix_branch_margin": 0.24590829905443645,
+    "wall_vector_rms_mpa": 0.002492604559860891,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.006003315015067416,
+    "nonelastic_0_mm": -0.006018015689932977,
+    "gauge_imbalance_0_mm": -1.4700674865561307e-05,
+    "source_90_mm": 0.013877112751496294,
+    "nonelastic_90_mm": 0.013873920914229312,
+    "gauge_imbalance_90_mm": -3.191837266982786e-06,
+    "evaluations": 30,
+    "optimizer_status": 1,
+    "response_change_mm": 2.8730722994611477e-05,
+    "enriched_relative_residual": 0.015624897522382959,
+    "enriched_residual_dual_norm": 0.006292371550915245,
+    "enriched_source_dual_norm": 0.4027144204882819,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 8,
+    "minimum_prefix_branch_margin": 0.21651520761279558,
+    "wall_vector_rms_mpa": 0.003768345795470388,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.00907720445020585,
+    "nonelastic_0_mm": -0.009035984552184203,
+    "gauge_imbalance_0_mm": 4.121989802164695e-05,
+    "source_90_mm": 0.021811555345640155,
+    "nonelastic_90_mm": 0.021720841257799436,
+    "gauge_imbalance_90_mm": -9.071408784071949e-05,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 8,
+    "minimum_prefix_branch_margin": 0.21656789452840852,
+    "wall_vector_rms_mpa": 0.0029498785353196584,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.009542102776978922,
+    "nonelastic_0_mm": -0.009562515208661202,
+    "gauge_imbalance_0_mm": -2.0412431682279367e-05,
+    "source_90_mm": 0.022088166948293627,
+    "nonelastic_90_mm": 0.02206360738683082,
+    "gauge_imbalance_90_mm": -2.455956146280719e-05,
+    "evaluations": 18,
+    "optimizer_status": 1,
+    "response_change_mm": 0.0005265306564769985,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 8,
+    "minimum_prefix_branch_margin": 0.2164305218277531,
+    "wall_vector_rms_mpa": 0.002831956443498718,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.009474190363563081,
+    "nonelastic_0_mm": -0.009508392825042154,
+    "gauge_imbalance_0_mm": -3.420246147907251e-05,
+    "source_90_mm": 0.022050683298254523,
+    "nonelastic_90_mm": 0.022033737779842164,
+    "gauge_imbalance_90_mm": -1.694551841235903e-05,
+    "evaluations": 30,
+    "optimizer_status": 0,
+    "response_change_mm": 6.791241341584132e-05,
+    "enriched_relative_residual": 0.020785245077672126,
+    "enriched_residual_dual_norm": 0.012196327379696116,
+    "enriched_source_dual_norm": 0.586778136804248,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 9,
+    "minimum_prefix_branch_margin": 0.18277570658884398,
+    "wall_vector_rms_mpa": 0.0038764137126939264,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.014796790188374218,
+    "nonelastic_0_mm": -0.014690549399318206,
+    "gauge_imbalance_0_mm": 0.000106240789056012,
+    "source_90_mm": 0.03258058497906433,
+    "nonelastic_90_mm": 0.03249699099084743,
+    "gauge_imbalance_90_mm": -8.3593988216904e-05,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 9,
+    "minimum_prefix_branch_margin": 0.18428088886121957,
+    "wall_vector_rms_mpa": 0.0036462752617135363,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.01532705830555096,
+    "nonelastic_0_mm": -0.01520588570208249,
+    "gauge_imbalance_0_mm": 0.00012117260346847063,
+    "source_90_mm": 0.03297307426930729,
+    "nonelastic_90_mm": 0.032898336219814084,
+    "gauge_imbalance_90_mm": -7.473804949320595e-05,
+    "evaluations": 20,
+    "optimizer_status": 1,
+    "response_change_mm": 0.0005302681171767427,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 9,
+    "minimum_prefix_branch_margin": 0.17047119221950813,
+    "wall_vector_rms_mpa": 0.0038389503110112136,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.015892914763358735,
+    "nonelastic_0_mm": -0.01580498621838551,
+    "gauge_imbalance_0_mm": 8.79285449732238e-05,
+    "source_90_mm": 0.03325212534639462,
+    "nonelastic_90_mm": 0.033217061358433546,
+    "gauge_imbalance_90_mm": -3.5063987961075904e-05,
+    "evaluations": 44,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.0005991005163030211,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 9,
+    "minimum_prefix_branch_margin": 0.1568125115311535,
+    "wall_vector_rms_mpa": 0.0038564688729175035,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.015827717622071254,
+    "nonelastic_0_mm": -0.015747757413135565,
+    "gauge_imbalance_0_mm": 7.996020893568864e-05,
+    "source_90_mm": 0.033251223020572276,
+    "nonelastic_90_mm": 0.03322766063790995,
+    "gauge_imbalance_90_mm": -2.3562382662323245e-05,
+    "evaluations": 56,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 6.519714128748119e-05,
+    "enriched_relative_residual": 0.02609929792678373,
+    "enriched_residual_dual_norm": 0.021756049121579954,
+    "enriched_source_dual_norm": 0.8335875234120137,
+    "retained_fit_dual_norm": 0.008625615983484086,
+    "frozen_source_projection_floor": 0.019973092456754465,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.09814452536389122,
+    "wall_vector_rms_mpa": 0.005781220641113624,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02396074346582459,
+    "nonelastic_0_mm": -0.023611452570185452,
+    "gauge_imbalance_0_mm": 0.00034929089563913787,
+    "source_90_mm": 0.046965819025591375,
+    "nonelastic_90_mm": 0.04682757198687172,
+    "gauge_imbalance_90_mm": -0.00013824703871965355,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.08658272725391308,
+    "wall_vector_rms_mpa": 0.0059524642407419595,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02463588719942331,
+    "nonelastic_0_mm": -0.024306164848153913,
+    "gauge_imbalance_0_mm": 0.00032972235126939656,
+    "source_90_mm": 0.04753701009062796,
+    "nonelastic_90_mm": 0.047410420037964335,
+    "gauge_imbalance_90_mm": -0.00012659005266362627,
+    "evaluations": 21,
+    "optimizer_status": 1,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.0006947122779684609,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.08377067845788974,
+    "wall_vector_rms_mpa": 0.005896024587357449,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02534896340351428,
+    "nonelastic_0_mm": -0.025044035806473713,
+    "gauge_imbalance_0_mm": 0.00030492759704056627,
+    "source_90_mm": 0.04797637592085205,
+    "nonelastic_90_mm": 0.04785900234621448,
+    "gauge_imbalance_90_mm": -0.00011737357463757064,
+    "evaluations": 28,
+    "optimizer_status": 1,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.0007378709583198001,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.08781950030361638,
+    "wall_vector_rms_mpa": 0.005897590177732721,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02561989598589828,
+    "nonelastic_0_mm": -0.02532564031038926,
+    "gauge_imbalance_0_mm": 0.00029425567550902046,
+    "source_90_mm": 0.04814904803151993,
+    "nonelastic_90_mm": 0.0480373171124374,
+    "gauge_imbalance_90_mm": -0.00011173091908252969,
+    "evaluations": 40,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.000281604503915546,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.07936354539492066,
+    "wall_vector_rms_mpa": 0.00591296821373005,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.025462359480501108,
+    "nonelastic_0_mm": -0.025205575422543938,
+    "gauge_imbalance_0_mm": 0.0002567840579571698,
+    "source_90_mm": 0.048012058601064694,
+    "nonelastic_90_mm": 0.047921570353917704,
+    "gauge_imbalance_90_mm": -9.048824714699005e-05,
+    "evaluations": 52,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.00015753650539717182,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.07284018242869855,
+    "wall_vector_rms_mpa": 0.00571346118874255,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02559360420350576,
+    "nonelastic_0_mm": -0.025336053869324106,
+    "gauge_imbalance_0_mm": 0.0002575503341816533,
+    "source_90_mm": 0.04812803033749101,
+    "nonelastic_90_mm": 0.04804785681535879,
+    "gauge_imbalance_90_mm": -8.017352213222223e-05,
+    "evaluations": 64,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.0001312447230046518,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.07112047263087577,
+    "wall_vector_rms_mpa": 0.005634937525508009,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.025818615911080974,
+    "nonelastic_0_mm": -0.025563409465938554,
+    "gauge_imbalance_0_mm": 0.00025520644514242033,
+    "source_90_mm": 0.04830650277133868,
+    "nonelastic_90_mm": 0.04821725483006221,
+    "gauge_imbalance_90_mm": -8.924794127647406e-05,
+    "evaluations": 76,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.00022735559661444735,
+    "enriched_relative_residual": 0.03395353064038169,
+    "enriched_residual_dual_norm": 0.03963896546328012,
+    "enriched_source_dual_norm": 1.1674475294812676,
+    "retained_fit_dual_norm": 0.01256363242035385,
+    "frozen_source_projection_floor": 0.037595248681260816,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_weak_balance"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.06734963293388486,
+    "wall_vector_rms_mpa": 0.005585898146858254,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.026197762951277542,
+    "nonelastic_0_mm": -0.02597088943717708,
+    "gauge_imbalance_0_mm": 0.00022687351410046255,
+    "source_90_mm": 0.04863208587396529,
+    "nonelastic_90_mm": 0.048553711357032264,
+    "gauge_imbalance_90_mm": -7.837451693302327e-05,
+    "evaluations": 88,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 48,
+      "angular_modes": 80,
+      "angular_samples": 320,
+      "centrosymmetric": true
+    },
+    "response_change_mm": 0.0004074799712385259,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.13084060471019465,
+    "wall_vector_rms_mpa": 0.0058887047262618595,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02087017202368357,
+    "nonelastic_0_mm": -0.020686768009585837,
+    "gauge_imbalance_0_mm": 0.00018340401409773152,
+    "source_90_mm": 0.04425846541349181,
+    "nonelastic_90_mm": 0.04412256552768803,
+    "gauge_imbalance_90_mm": -0.00013589988580377937,
+    "evaluations": 108,
+    "optimizer_status": 1,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 0.005327590927593974,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.12757683502298053,
+    "wall_vector_rms_mpa": 0.0059306751270358175,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02113429110118966,
+    "nonelastic_0_mm": -0.020958442307819073,
+    "gauge_imbalance_0_mm": 0.00017584879337058726,
+    "source_90_mm": 0.04437833951883982,
+    "nonelastic_90_mm": 0.04424819995859643,
+    "gauge_imbalance_90_mm": -0.00013013956024338774,
+    "evaluations": 120,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 0.00027167429823323624,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.12814219163135668,
+    "wall_vector_rms_mpa": 0.00591412661500666,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02124469787193933,
+    "nonelastic_0_mm": -0.02107094803838662,
+    "gauge_imbalance_0_mm": 0.00017374983355271031,
+    "source_90_mm": 0.04443980951748532,
+    "nonelastic_90_mm": 0.044311205216222525,
+    "gauge_imbalance_90_mm": -0.00012860430126279687,
+    "evaluations": 132,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 0.00011250573056754629,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 10,
+    "minimum_prefix_branch_margin": 0.12821228063079304,
+    "wall_vector_rms_mpa": 0.005910823814676642,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.021251865040744326,
+    "nonelastic_0_mm": -0.021083106099778218,
+    "gauge_imbalance_0_mm": 0.0001687589409661086,
+    "source_90_mm": 0.04444214813366695,
+    "nonelastic_90_mm": 0.044313580992161,
+    "gauge_imbalance_90_mm": -0.00012856714150595583,
+    "evaluations": 144,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 1.2158061391598363e-05,
+    "enriched_relative_residual": 0.019887180234641602,
+    "enriched_residual_dual_norm": 0.020861150928927416,
+    "enriched_source_dual_norm": 1.048974800992111,
+    "retained_fit_dual_norm": 0.0186291408846868,
+    "frozen_source_projection_floor": 0.00938843586429438,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 11,
+    "minimum_prefix_branch_margin": 0.09089936379544052,
+    "wall_vector_rms_mpa": 0.009494144595654595,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02787390025984764,
+    "nonelastic_0_mm": -0.02760219149991219,
+    "gauge_imbalance_0_mm": 0.00027170875993545035,
+    "source_90_mm": 0.05832897474112016,
+    "nonelastic_90_mm": 0.05804029609290107,
+    "gauge_imbalance_90_mm": -0.00028867864821909006,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "accepted": false,
+    "pending_reasons": [
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 11,
+    "minimum_prefix_branch_margin": 0.09126399247949477,
+    "wall_vector_rms_mpa": 0.008556608061983153,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.028274366598095162,
+    "nonelastic_0_mm": -0.028117023545774677,
+    "gauge_imbalance_0_mm": 0.0001573430523204855,
+    "source_90_mm": 0.05834348055684909,
+    "nonelastic_90_mm": 0.058109622111009535,
+    "gauge_imbalance_90_mm": -0.00023385844583955623,
+    "evaluations": 21,
+    "optimizer_status": 1,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 0.0005148320458624872,
+    "accepted": false,
+    "pending_reasons": [
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 11,
+    "minimum_prefix_branch_margin": 0.08988361466399285,
+    "wall_vector_rms_mpa": 0.008490638845677257,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.02820388723468576,
+    "nonelastic_0_mm": -0.02808428674242613,
+    "gauge_imbalance_0_mm": 0.00011960049225962985,
+    "source_90_mm": 0.05825634013497849,
+    "nonelastic_90_mm": 0.05803975109977987,
+    "gauge_imbalance_90_mm": -0.000216589035198618,
+    "evaluations": 33,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 8.714042187060039e-05,
+    "enriched_relative_residual": 0.022287833978370506,
+    "enriched_residual_dual_norm": 0.02883305107596043,
+    "enriched_source_dual_norm": 1.2936677069625433,
+    "retained_fit_dual_norm": 0.026161126806054417,
+    "frozen_source_projection_floor": 0.012121892533194022,
+    "accepted": true,
+    "pending_reasons": []
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.053153257659672944,
+    "wall_vector_rms_mpa": 0.012912184808530949,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.03338344893895348,
+    "nonelastic_0_mm": -0.03329702224472547,
+    "gauge_imbalance_0_mm": 8.642669422800897e-05,
+    "source_90_mm": 0.07320280596704676,
+    "nonelastic_90_mm": 0.07299126236979889,
+    "gauge_imbalance_90_mm": -0.00021154359724787075,
+    "evaluations": 12,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "second_block_required",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.0498922175533914,
+    "wall_vector_rms_mpa": 0.0116583099118508,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.03398390418652742,
+    "nonelastic_0_mm": -0.033982329591491854,
+    "gauge_imbalance_0_mm": 1.5745950355666727e-06,
+    "source_90_mm": 0.07359162425561132,
+    "nonelastic_90_mm": 0.07326049981559432,
+    "gauge_imbalance_90_mm": -0.00033112444001699715,
+    "evaluations": 24,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 0.0006853073467663826,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "response_change",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.04791513447683704,
+    "wall_vector_rms_mpa": 0.010960386750836954,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.03392540064616418,
+    "nonelastic_0_mm": -0.03397830643743436,
+    "gauge_imbalance_0_mm": -5.290579127018025e-05,
+    "source_90_mm": 0.07349189446767991,
+    "nonelastic_90_mm": 0.07318281319412483,
+    "gauge_imbalance_90_mm": -0.0003090812735550841,
+    "evaluations": 36,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 9.972978793140741e-05,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.0496823519690385,
+    "wall_vector_rms_mpa": 0.010762760846528783,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.03390381942686869,
+    "nonelastic_0_mm": -0.033994806559380704,
+    "gauge_imbalance_0_mm": -9.098713251201596e-05,
+    "source_90_mm": 0.07341801994392681,
+    "nonelastic_90_mm": 0.07315326491021712,
+    "gauge_imbalance_90_mm": -0.0002647550337096932,
+    "evaluations": 48,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 7.3874523753098e-05,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.04920217242671754,
+    "wall_vector_rms_mpa": 0.010633135824960518,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.03389983046889254,
+    "nonelastic_0_mm": -0.03399309184740233,
+    "gauge_imbalance_0_mm": -9.326137850979022e-05,
+    "source_90_mm": 0.07338643940238199,
+    "nonelastic_90_mm": 0.07313383012928426,
+    "gauge_imbalance_90_mm": -0.00025260927309772585,
+    "evaluations": 57,
+    "optimizer_status": 1,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 3.1580541544826146e-05,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "enriched_test_required"
+    ]
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.049109572192483145,
+    "wall_vector_rms_mpa": 0.010478618930146726,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.033913479343458036,
+    "nonelastic_0_mm": -0.03401512791101516,
+    "gauge_imbalance_0_mm": -0.00010164856755712215,
+    "source_90_mm": 0.0733707669538975,
+    "nonelastic_90_mm": 0.07314810279081234,
+    "gauge_imbalance_90_mm": -0.0002226641630851678,
+    "evaluations": 69,
+    "optimizer_status": 0,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 2.2036063612826395e-05,
+    "enriched_relative_residual": 0.02297249850870133,
+    "enriched_residual_dual_norm": 0.03588356544494329,
+    "enriched_source_dual_norm": 1.5620227565300142,
+    "retained_fit_dual_norm": 0.031914174589527056,
+    "frozen_source_projection_floor": 0.01640474715779917,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "enriched_weak_balance"
+    ]
+  },
+  {
+    "step": 12,
+    "minimum_prefix_branch_margin": 0.04919701390354608,
+    "wall_vector_rms_mpa": 0.01041088107472839,
+    "integration": [
+      96,
+      512
+    ],
+    "wall_points": 1024,
+    "wall_angular_shift": 0.5,
+    "source_0_mm": -0.03393558569290564,
+    "nonelastic_0_mm": -0.034037465023618395,
+    "gauge_imbalance_0_mm": -0.00010187933071275496,
+    "source_90_mm": 0.073377801551904,
+    "nonelastic_90_mm": 0.07316675454986547,
+    "gauge_imbalance_90_mm": -0.000211047002038528,
+    "evaluations": 171,
+    "optimizer_status": 1,
+    "head_solves": 0,
+    "polish_evaluation_limit": 240,
+    "training_test_space": {
+      "radial_order": 56,
+      "angular_modes": 96
+    },
+    "response_change_mm": 2.233711260323651e-05,
+    "enriched_relative_residual": 0.022936808640184866,
+    "enriched_residual_dual_norm": 0.03581731289343556,
+    "enriched_source_dual_norm": 1.5615647954913956,
+    "retained_fit_dual_norm": 0.031843632318516196,
+    "frozen_source_projection_floor": 0.016397041918299143,
+    "accepted": false,
+    "pending_reasons": [
+      "wall_traction",
+      "enriched_weak_balance"
+    ]
+  }
+]

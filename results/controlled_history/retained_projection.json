@@ -1,0 +1,31 @@
+{
+  "checkpoint": "results/history_resolution/parallel_r4_j48_m80/model.pt",
+  "completed_steps": 12,
+  "pending_step": null,
+  "displacement_space": {
+    "radial_order": 48,
+    "angular_modes": 80,
+    "angular_samples": 320,
+    "centrosymmetric": true
+  },
+  "test_space": {
+    "radial_order": 56,
+    "angular_modes": 96
+  },
+  "integration": {
+    "radial": 96,
+    "angular": 512
+  },
+  "meaning": "Dual energy norm of the weak residual at the saved displacement and its own plastic source; not a nonlinear solution error bound.",
+  "rows": [
+    {
+      "load_step": 12,
+      "residual_dual_norm": 0.09650763013990074,
+      "source_dual_norm": 1.635892879817179,
+      "relative_residual_to_source": 0.058993856706978307,
+      "retained_fit_dual_norm": 0.07313060180801331,
+      "frozen_source_projection_floor": 0.06297330985757153,
+      "decomposition_energy_error": -3.8163916471489756e-17
+    }
+  ]
+}
