@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "Please cite this repository when using its code or data."
+title: "Code and data for anisotropic elastoplastic tunnel unloading using OES-PINN"
+type: software
+authors:
+  - family-names: Zhu
+    given-names: Pengcheng
+  - family-names: Chen
+    given-names: Tielin
+version: "2026.11"
+date-released: 2026-11-02
+repository-code: "https://github.com/math-sudu/exact-subdomain-ddpinn"

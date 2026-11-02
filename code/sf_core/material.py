@@ -1,47 +1,7 @@
-"""Transversely isotropic plane-strain material chain, self-contained.
-
-Five engineering constants (Eh, Ev, nu_vh, nu_hh, Gvh) plus the bedding
-angle phi (radians, measured from the section x axis to the bedding-parallel
-direction) -> plane-strain reduced compliances beta_ij in section axes ->
-Lekhnitskii quartic roots mu_1, mu_2 (upper half plane) -> displacement
-coefficients p_k, q_k -> invariant material matrix Lambda = -i B M^{-1}.
-
-Conventions (fixed, do not re-derive):
-  * tension positive
-  * nu_vh couples through -nu_vh/Ev in the principal compliance
-  * bedding-plane reduction:
-        beta0_11 = (1 - nu_hh^2)/Eh
-        beta0_22 = 1/Ev - nu_vh^2 Eh/Ev^2
-        beta0_12 = -nu_vh (1 + nu_hh)/Ev
-        beta0_66 = 1/Gvh,   beta0_16 = beta0_26 = 0
-  * rotation to section axes by congruence beta(phi) = Q^T beta0 Q with
-        Q = [[c^2, s^2, 2sc], [s^2, c^2, -2sc], [-sc, sc, c^2 - s^2]]
-  * quartic  b11 mu^4 - 2 b16 mu^3 + (2 b12 + b66) mu^2 - 2 b26 mu + b22 = 0,
-    keep the two upper-half-plane roots sorted by ascending imaginary part
-  * p_k = b11 mu_k^2 + b12 - b16 mu_k
-    q_k = b12 mu_k + b22/mu_k - b26
-  * Lambda = -i B M^{-1}, B = [[mu1, mu2], [-1, -1]], M = [[p1, p2], [q1, q2]]
-    -Lambda must be Hermitian positive definite (asserted).
-
-Two independent rotation paths are provided: `rotate_beta_congruence` (the
-closed-form 3x3 congruence above) and `rotate_beta_tensor` (full 6x6 Voigt ->
-4th-order tensor -> rotation about z -> reduce), so the verification suite can
-cross them.
-"""
-
-from __future__ import annotations
+"""Transversely isotropic compliance, stiffness and exterior impedance."""
 
 from dataclasses import dataclass, field
-
 import numpy as np
-
-__all__ = [
-    "beta0_principal", "rotate_beta_congruence", "rotate_beta_tensor",
-    "mu_roots", "pq_coeffs", "lambda_matrix", "TIMaterial",
-    "apparent_inv_E", "full_compliance_global",
-]
-
-
 def beta0_principal(Eh: float, Ev: float, nu_vh: float, nu_hh: float,
                     Gvh: float) -> np.ndarray:
     """Plane-strain reduced compliance in bedding axes, 3x3 symmetric
@@ -54,7 +14,6 @@ def beta0_principal(Eh: float, Ev: float, nu_vh: float, nu_hh: float,
                      [b12, b22, 0.0],
                      [0.0, 0.0, b66]])
 
-
 def rotate_beta_congruence(beta0: np.ndarray, phi: float) -> np.ndarray:
     """Section-axes compliance via the 3x3 Voigt congruence."""
     c, s = np.cos(phi), np.sin(phi)
@@ -62,9 +21,6 @@ def rotate_beta_congruence(beta0: np.ndarray, phi: float) -> np.ndarray:
                   [s * s, c * c, -2.0 * s * c],
                   [-s * c, s * c, c * c - s * s]])
     return Q.T @ beta0 @ Q
-
-
-# --- independent rotation path: full compliance tensor -----------------------
 
 def _full_compliance_principal(Eh, Ev, nu_vh, nu_hh, Gvh) -> np.ndarray:
     """6x6 Voigt compliance, principal axes: x bedding-parallel (in section),
@@ -82,11 +38,10 @@ def _full_compliance_principal(Eh, Ev, nu_vh, nu_hh, Gvh) -> np.ndarray:
     a[5, 5] = 1.0 / Gvh
     return a
 
-
 _VOIGT_PAIRS = [(0, 0), (1, 1), (2, 2), (1, 2), (0, 2), (0, 1)]
+
 _TENSOR_IDX = {(0, 0): 0, (1, 1): 1, (2, 2): 2, (1, 2): 3, (2, 1): 3,
                (0, 2): 4, (2, 0): 4, (0, 1): 5, (1, 0): 5}
-
 
 def _voigt_to_tensor(a: np.ndarray) -> np.ndarray:
     S = np.zeros((3, 3, 3, 3))
@@ -99,7 +54,6 @@ def _voigt_to_tensor(a: np.ndarray) -> np.ndarray:
                     S[i, j, k, l] = fac * a[I, J]
     return S
 
-
 def _tensor_to_voigt(S: np.ndarray) -> np.ndarray:
     a = np.zeros((6, 6))
     for I, (i, j) in enumerate(_VOIGT_PAIRS):
@@ -108,13 +62,12 @@ def _tensor_to_voigt(S: np.ndarray) -> np.ndarray:
             a[I, J] = fac * S[i, j, k, l]
     return a
 
-
 def full_compliance_global(Eh: float, Ev: float, nu_vh: float, nu_hh: float,
                            Gvh: float, phi: float) -> np.ndarray:
     """Rotated 3-D compliance in engineering-Voigt order.
 
     This is the full counterpart of the reduced plane-strain ``beta`` chain
-    and is used by the incremental elastoplastic tier to retain ``sigma_zz``
+    and is used by the incremental elastoplastic formulation to retain ``sigma_zz``
     and ``epsilon_zz^p`` while enforcing total ``epsilon_zz = 0``.
     """
 
@@ -125,7 +78,6 @@ def full_compliance_global(Eh: float, Ev: float, nu_vh: float, nu_hh: float,
     R = np.array([[c, -s, 0.0], [s, c, 0.0], [0.0, 0.0, 1.0]])
     rotated = np.einsum("pi,qj,rk,sl,ijkl->pqrs", R, R, R, R, S)
     return _tensor_to_voigt(rotated)
-
 
 def rotate_beta_tensor(Eh, Ev, nu_vh, nu_hh, Gvh, phi: float) -> np.ndarray:
     """Section-axes reduced compliance via full tensor rotation about z by
@@ -140,16 +92,12 @@ def rotate_beta_tensor(Eh, Ev, nu_vh, nu_hh, Gvh, phi: float) -> np.ndarray:
             out[r, cc] = a[i, j] - a[i, 2] * a[j, 2] / a[2, 2]
     return out
 
-
 def apparent_inv_E(beta: np.ndarray, psi: float) -> float:
     """1/E_apparent for uniaxial stress along the in-section direction at
     angle psi: v = (c^2, s^2, sc) in (sxx, syy, txy) Voigt, 1/E = v beta v."""
     c, s = np.cos(psi), np.sin(psi)
     v = np.array([c * c, s * s, s * c])
     return float(v @ beta @ v)
-
-
-# --- roots, pq, Lambda -------------------------------------------------------
 
 def mu_roots(beta: np.ndarray) -> tuple[complex, complex]:
     """Upper-half-plane roots of the Lekhnitskii quartic, ascending Im."""
@@ -162,7 +110,6 @@ def mu_roots(beta: np.ndarray) -> tuple[complex, complex]:
         raise ValueError(f"expected 2 upper-half-plane roots, got {up}")
     return complex(up[0]), complex(up[1])
 
-
 def pq_coeffs(beta: np.ndarray, mu: complex) -> tuple[complex, complex]:
     b11, b12, b16 = beta[0, 0], beta[0, 1], beta[0, 2]
     b22, b26 = beta[1, 1], beta[1, 2]
@@ -170,16 +117,13 @@ def pq_coeffs(beta: np.ndarray, mu: complex) -> tuple[complex, complex]:
     q = b12 * mu + b22 / mu - b26
     return complex(p), complex(q)
 
-
 def lambda_matrix(mu1: complex, mu2: complex, p1: complex, q1: complex,
                   p2: complex, q2: complex,
                   row2: tuple[float, float] = (-1.0, -1.0)) -> np.ndarray:
-    """Lambda = -i B M^{-1}.  `row2` exists only so negative controls can
-    corrupt the second row of B; every real caller leaves the default."""
+    """Lambda = -i B M^{-1}, with the physical second row (-1, -1)."""
     B = np.array([[mu1, mu2], [row2[0], row2[1]]], dtype=complex)
     M = np.array([[p1, p2], [q1, q2]], dtype=complex)
     return -1j * (B @ np.linalg.inv(M))
-
 
 @dataclass
 class TIMaterial:
@@ -212,8 +156,7 @@ class TIMaterial:
         self._assert_neg_lambda_pd()
 
     def _assert_neg_lambda_pd(self) -> None:
-        """-Lambda Hermitian positive definite: the hypothesis behind the
-        pairing identity and both bounds.  Fails loudly, not silently."""
+        """Check that the elastic surface impedance -Lambda is Hermitian positive definite."""
         L = self.Lam
         herm = float(np.max(np.abs(L - L.conj().T)) / np.max(np.abs(L)))
         if herm > 1e-10:
@@ -258,5 +201,3 @@ class TIMaterial:
         numerator = (compliance[2, 0] * sxx + compliance[2, 1] * syy
                      + compliance[2, 5] * txy)
         return float(-numerator / compliance[2, 2])
-
-

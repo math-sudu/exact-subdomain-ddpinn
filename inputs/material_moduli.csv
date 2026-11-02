@@ -1,0 +1,10 @@
+rock,hardness,bedding,condition,minimum_mpa,maximum_mpa,specimen_groups
+carbonaceous_slate,soft,developed,intact,345.32,345.32,1
+carbonaceous_slate,very_soft,developed,intact,114.12,214.22,
+carbonaceous_slate,very_soft,developed,fractured,4.91,4.91,1
+slate,moderately_soft,developed,intact,1099.14,3889.99,
+slate,soft,undeveloped,intact,516.54,1040.82,
+slate,very_soft,undeveloped,intact,42.16,489.04,
+slate,very_soft,undeveloped,fractured,186.02,186.02,1
+slate,very_soft,developed,intact,59.49,420.38,
+slate,very_soft,developed,fractured,40.53,56.94,3

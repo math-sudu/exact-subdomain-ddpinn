@@ -1,0 +1,53 @@
+{
+  "case": "horseshoe_coarse",
+  "geometry": "inputs/horseshoe_geometry.json",
+  "length_scale_m": 6.73,
+  "interface_radius": 6.0,
+  "elastic_constants": {
+    "Eh_gpa": 0.84,
+    "Ev_gpa": 0.56,
+    "nu_vh": 0.3,
+    "nu_hh": 0.3,
+    "Gvh_gpa": 0.2153846153846154,
+    "bedding_dip_deg": 75.0
+  },
+  "insitu_mpa": [
+    -6.182,
+    -5.62,
+    0.0
+  ],
+  "physics": {
+    "matrix_cohesion_mpa": 0.2,
+    "matrix_phi_deg": 25.6,
+    "matrix_psi_deg": 0.0,
+    "joint_cohesion_mpa": 0.1,
+    "joint_phi_deg": 25.0,
+    "joint_psi_deg": 0.0,
+    "joint_normal_deg": 165.0,
+    "matrix_smoothing_mpa": 0.01,
+    "joint_smoothing_mpa": 0.01
+  },
+  "return_law": "matrix_joint_tension",
+  "tension_mpa": 0.03,
+  "support_pressure_mpa": 0.7,
+  "radial_order": 12,
+  "angular_modes": 24,
+  "angular_samples": 128,
+  "hidden": [
+    64,
+    64,
+    64
+  ],
+  "neural_amplitude": 60.0,
+  "load_steps": 12,
+  "quadrature": {
+    "radial": 32,
+    "angular": 256,
+    "boundary": 512
+  },
+  "training": {
+    "iterations_per_block": 200,
+    "weak_relative": 0.003,
+    "response_change_mm": 0.02
+  }
+}

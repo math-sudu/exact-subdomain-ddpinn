@@ -1,12 +1,4 @@
 __pycache__/
 *.py[cod]
 .venv/
-.pytest_cache/
-figures/
-results/recomputed/
-results/continuation/
-results/recomputed_interface/
-results/recomputed_orientation/
-results/**/fields.npz
-results/unloading/wall_profiles.csv
-results/unloading/radial_kinematics.npz
+results/

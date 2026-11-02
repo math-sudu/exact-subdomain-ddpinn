@@ -1,0 +1,68 @@
+{
+  "learned": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "untrained": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "spectral": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "spectral_prefix": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "prefix_only": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "direct_coarse": {
+    "config": "configs/coarse.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "direct_fine": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "accuracy_reference": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "full_network": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "network_coarse": {
+    "config": "configs/coarse.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "network_steps24": {
+    "config": "configs/steps24.json",
+    "steps": 24,
+    "radial_order": 12,
+    "angular_modes": 24
+  }
+}
