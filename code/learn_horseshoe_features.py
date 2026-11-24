@@ -5,6 +5,9 @@ import time
 import torch
 from oespinn.horseshoe import new_increment
 from oespinn.neural_reduction import hidden_coefficients
+class FeatureFitError(RuntimeError):
+    """The prefix fit did not reach its specified energy tolerance."""
+
 def fit_features(geometry, work, settings, increments, *, output, source):
     model = new_increment(None, geometry, settings, work.device)
     target = torch.stack(increments).flatten(1).T
@@ -46,5 +49,5 @@ def fit_features(geometry, work, settings, increments, *, output, source):
         if float(error.max()) < .03:
             break
     else:
-        raise RuntimeError('Feature fit did not attain the specified prefix approximation')
+        raise FeatureFitError('Feature fit did not attain the specified prefix approximation')
     return model, history

@@ -155,7 +155,10 @@ class HorseshoeWork:
         return -torch.einsum("qid,qie->de", u, t)*(2*torch.pi*self.geometry.radius/len(v))
 
     def source_load(self, plastic):
-        source = (plastic@self.c.T)*self.w[:, None]
+        return self.stress_load(plastic@self.c.T)
+
+    def stress_load(self, stress):
+        source = stress*self.w[:, None]
         x = self.dx.T@source[:, 0]+self.dy.T@source[:, 3]
         y = self.dy.T@source[:, 1]+self.dx.T@source[:, 3]
         return torch.stack((x, y), -1).flatten()

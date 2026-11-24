@@ -22,9 +22,17 @@ def extend(coefficients, j0, m0, j1, m1):
     return target.flatten(0, 1)[1:]
 
 
-def exterior_rows(work, increments):
+def exterior_field(work, total):
     mat, geo = work.material, work.geometry
     mapping = np.array([[mat.p1, mat.p2], [mat.q1, mat.q2]])
+    u = (work.outer_basis[0]@total).cpu().numpy()*C.SIGMA_REF*geo.length_scale/C.E_REF
+    spectrum = np.fft.rfft(u, axis=0)/len(u)
+    potentials = np.linalg.solve(mapping, spectrum[1:work.m+1].conj().T)
+    return ExteriorField(mat, geo.radius*geo.length_scale, tuple(potentials))
+
+
+def exterior_rows(work, increments):
+    mat, geo = work.material, work.geometry
     angles = np.arange(768)*2*np.pi/768
     radii = np.array([1., 1.01, 1.05, 1.2, 1.5, 2., 4., 8.])*geo.radius*geo.length_scale
     x, y = (radii[:, None]*np.cos(angles)).ravel(), (radii[:, None]*np.sin(angles)).ravel()
@@ -32,10 +40,7 @@ def exterior_rows(work, increments):
     rows = []
     for step, coefficient in enumerate(increments, 1):
         total += coefficient
-        u = (work.outer_basis[0]@total).cpu().numpy()*C.SIGMA_REF*geo.length_scale/C.E_REF
-        spectrum = np.fft.rfft(u, axis=0)/len(u)
-        potentials = np.linalg.solve(mapping, spectrum[1:work.m+1].conj().T)
-        field = ExteriorField(mat, geo.radius*geo.length_scale, tuple(potentials))
+        field = exterior_field(work, total)
         sx, sy, txy = field.stresses(x, y)
         zz = mat.plane_strain_sigma_zz(1., 0., 0.)*sx+mat.plane_strain_sigma_zz(0., 1., 0.)*sy+mat.plane_strain_sigma_zz(0., 0., 1.)*txy
         stress = work.tensor(np.stack((sx, sy, zz, txy), -1)/C.SIGMA_REF)+work.s0

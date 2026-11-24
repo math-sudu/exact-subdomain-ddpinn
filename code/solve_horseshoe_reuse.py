@@ -17,7 +17,7 @@ def main():
     parser.add_argument('--prefix-step', type=int, default=8)
     parser.add_argument('--through-step', type=int, default=12)
     parser.add_argument('--output', required=True)
-    parser.add_argument('--source', default='results/horseshoe/direct_refined/model.pt')
+    parser.add_argument('--source', default='results/learned/prefix.pt')
     parser.add_argument('--features')
     args = parser.parse_args()
     if args.method=='neural' and not args.features:

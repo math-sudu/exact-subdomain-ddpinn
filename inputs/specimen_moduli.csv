@@ -1,0 +1,48 @@
+specimen,lithology,hardness,bedding,condition,initial_modulus_mpa,linear_modulus_mpa
+1,carbonaceous slate,soft,developed,intact,345.32,345.32
+2,slate,moderately soft,undeveloped,intact,204.26,1891.44
+3,slate,soft,undeveloped,intact,137.59,797.62
+4,slate,soft,undeveloped,intact,74.18,713.72
+5,slate,very soft,undeveloped,intact,431.45,431.45
+6,slate,very soft,undeveloped,fractured,186.02,186.02
+7,slate,moderately soft,undeveloped,intact,357.27,1689.06
+8,slate,very soft,undeveloped,intact,61.27,243.23
+9,carbonaceous slate,very soft,developed,intact,114.12,114.12
+10,slate,very soft,developed,intact,420.38,420.38
+11,slate,very soft,undeveloped,intact,405.78,405.78
+12,slate,soft,undeveloped,intact,910.65,910.65
+13,slate,moderately soft,undeveloped,intact,792.56,2832.79
+14,slate,very soft,developed,intact,315.00,315.00
+15,slate,moderately soft,undeveloped,intact,486.78,3889.99
+16,slate,soft,undeveloped,intact,134.47,516.54
+17,carbonaceous slate,very soft,developed,intact,143.01,143.01
+18,slate,very soft,undeveloped,intact,375.27,375.27
+19,slate,very soft,undeveloped,intact,42.16,42.16
+20,slate,moderately soft,undeveloped,intact,125.62,1256.70
+21,slate,soft,undeveloped,intact,444.24,954.00
+22,slate,soft,undeveloped,intact,51.64,865.91
+23,slate,soft,undeveloped,intact,461.86,1040.82
+24,slate,very soft,undeveloped,intact,174.68,174.68
+25,carbonaceous slate,very soft,developed,fractured,16.66,114.76
+26,slate,very soft,developed,intact,65.88,250.45
+27,slate with mudstone,very soft,unspecified,fractured,10.07,56.94
+28,slate,very soft,undeveloped,intact,23.11,489.04
+29,slate,very soft,undeveloped,intact,158.69,158.69
+30,slate,very soft,developed,intact,53.38,259.45
+31,carbonaceous slate,very soft,unspecified,fractured,4.91,4.91
+32,slate,very soft,undeveloped,intact,36.18,108.12
+33,slate,very soft,developed,intact,78.45,78.45
+34,slate,very soft,developed,intact,46.81,156.52
+35,slate,very soft,developed,intact,280.57,280.57
+36,slate,very soft,developed,intact,71.57,71.57
+37,slate,very soft,developed,intact,229.03,229.03
+38,slate,very soft,developed,fractured,40.53,40.53
+39,slate,very soft,developed,intact,133.62,218.67
+40,slate,very soft,undeveloped,intact,237.04,237.04
+41,slate,moderately soft,undeveloped,intact,337.39,1099.14
+42,carbonaceous slate,very soft,developed,intact,214.22,214.22
+43,slate,soft,undeveloped,intact,31.69,866.39
+44,slate,very soft,unspecified,fractured,52.29,52.29
+45,slate,very soft,developed,intact,43.87,543.47
+46,slate,very soft,developed,intact,59.49,59.49
+47,carbonaceous slate,very soft,developed,intact,182.01,182.01

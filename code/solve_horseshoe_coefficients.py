@@ -9,8 +9,13 @@ from run_horseshoe import ROOT, make_work, write_results
 from oespinn import config as C
 
 
+class IncrementConvergenceError(RuntimeError):
+    pass
+
+
 @torch.no_grad()
-def solve_increment(work, prefix, previous_plastic, release, predictor, *, tolerance=1e-4, progress=None):
+def solve_increment(work, prefix, previous_plastic, release, predictor, *, tolerance=1e-4,
+                    progress=None, stalled_gauge_test=None):
     """Consistent Newton steps in elastic energy coordinates, with Armijo search."""
     coefficient = predictor.clone()
     records = []
@@ -64,13 +69,15 @@ def solve_increment(work, prefix, previous_plastic, release, predictor, *, toler
             if accepted:
                 break
         else:
-            raise RuntimeError(f"Armijo search failed at release {release}, residual {norm}")
+            if stalled_gauge_test is not None and stalled_gauge_test(residual):
+                return coefficient, returned, records, evaluations
+            raise IncrementConvergenceError(f"Armijo search failed at release {release}, residual {norm}")
         coefficient = trial
         records.append(dict(iteration=iteration+1, residual=norm, alpha=alpha,
                             trial_residual=(2*trial_merit)**.5, backtracks=backtrack, damping=damping))
         if progress is not None:
             progress(records[-1], coefficient)
-    raise RuntimeError(f"Newton iteration did not converge at release {release}")
+    raise IncrementConvergenceError(f"Newton iteration did not converge at release {release}")
 
 
 def main():
@@ -79,6 +86,8 @@ def main():
     parser.add_argument("--output", required=True)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--residual-work-bound-mm", type=float, default=.15)
+    parser.add_argument("--recover-stalled", action="store_true",
+                        help="Retry a stalled load from a midpoint predictor and test exact gauge work if Armijo stalls.")
     args = parser.parse_args()
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(4)
@@ -92,6 +101,11 @@ def main():
         work.factor, gauge[:, None], upper=False).norm()*work.load_norm)*displacement_scale
         for name, gauge in work.gauges().items()}
     tolerance = args.residual_work_bound_mm/max(bound_factors.values())
+    gauge_rows = None
+    if args.recover_stalled:
+        loads = torch.stack(list(work.gauges().values()), dim=1)
+        gauge_rows = (torch.linalg.solve_triangular(work.factor, loads, upper=False).T
+                      *work.load_norm*displacement_scale)
     increments, trajectory = [], []
     prefix = work.c.new_zeros((work.n, 2))
     plastic = work.c.new_zeros((len(work.xy), 4))
@@ -107,6 +121,8 @@ def main():
             raise ValueError("Resume settings differ from the saved direct calculation")
         increments = saved["coefficients"]
         trajectory = saved["trajectory"]
+        if not args.recover_stalled and any(r.get("stopping_rule") == "exact_gauge_work_after_stall" for r in trajectory):
+            raise ValueError("This saved history used exact gauge work at a stalled step; resume with --recover-stalled.")
         if increments:
             with torch.no_grad():
                 prefix = sum(increments, prefix)
@@ -115,17 +131,38 @@ def main():
         before = time.perf_counter()
         pending_path = output/"pending.pt"
         predictor = increments[-1] if increments else elastic
+        recovery = {}
         if pending_path.exists():
             pending = torch.load(pending_path, map_location=args.device, weights_only=False)
             if pending["step"] == step and pending["settings"] == settings:
                 predictor = pending["coefficient"]
+                if args.recover_stalled:
+                    # The midpoint is only an initial-guess calculation. Keep
+                    # the committed plastic history fixed at the preceding step.
+                    halfway = (step-.5)/settings["load_steps"]
+                    try:
+                        middle, _, _, _ = solve_increment(
+                            work, prefix, plastic, halfway, .5*predictor, tolerance=tolerance)
+                    except (IncrementConvergenceError, FloatingPointError):
+                        recovery["midpoint_predictor"] = False
+                    else:
+                        predictor = 2*middle
+                        recovery["midpoint_predictor"] = True
+        def stalled_gauge_test(residual):
+            exact_mm = float((gauge_rows@residual).abs().max())
+            if exact_mm <= args.residual_work_bound_mm:
+                recovery.update(stopping_rule="exact_gauge_work_after_stall",
+                                full_residual=float(residual.norm()), max_gauge_work_mm=exact_mm)
+                return True
+            return False
         def progress(record, coefficient):
             torch.save(dict(step=step, settings=settings, coefficient=coefficient.cpu(),
                             iteration=record), pending_path)
             print(json.dumps(dict(step=step, **record)), flush=True)
         coefficient, returned, records, evaluations = solve_increment(
             work, prefix, plastic, step/settings["load_steps"],
-            predictor, tolerance=tolerance, progress=progress)
+            predictor, tolerance=tolerance, progress=progress,
+            stalled_gauge_test=stalled_gauge_test if args.recover_stalled else None)
         if args.device.startswith("cuda"):
             torch.cuda.synchronize()
         seconds = time.perf_counter()-before
@@ -133,7 +170,7 @@ def main():
         prefix = prefix+coefficient
         plastic = plastic+returned["plastic"]
         record = dict(step=step, seconds=seconds, residual_evaluations=evaluations,
-                      tolerance=tolerance, newton_iterations=len(records), iterations=records)
+                      tolerance=tolerance, newton_iterations=len(records), iterations=records, **recovery)
         trajectory.append(record)
         saved = dict(solver="direct_spectral", settings=settings, tolerance=tolerance,
                      completed_steps=step, coefficients=[c.cpu() for c in increments],
@@ -163,6 +200,9 @@ def main():
                     maximum_cuda_memory_bytes=torch.cuda.max_memory_allocated() if args.device.startswith("cuda") else None,
                     tolerance=tolerance, residual_work_bound_mm=args.residual_work_bound_mm,
                     residual_work_bound_factors_mm=bound_factors, final=rows[-1])
+    if args.recover_stalled:
+        metadata["steps_using_exact_gauge_work"] = [
+            r["step"] for r in trajectory if r.get("stopping_rule") == "exact_gauge_work_after_stall"]
     (output/"comparison_run.json").write_text(json.dumps(metadata, indent=2)+"\n", "utf-8")
     print(json.dumps(metadata), flush=True)
 

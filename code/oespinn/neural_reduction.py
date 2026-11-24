@@ -36,6 +36,47 @@ def energy_basis(work, candidates, relative_cutoff=1e-10):
     return basis, singular
 
 
+@torch.no_grad()
+def current_residual_enrichment(work, basis, coefficient, prefix, plastic, release, tolerance):
+    """Add one current-increment Newton direction outside the learned span."""
+    import numpy as np
+    from scipy.sparse.linalg import LinearOperator, gmres
+
+    residual, returned = work.residual_state(coefficient, prefix, plastic, release)
+    defect = float(residual.norm())
+    if defect <= tolerance:
+        return basis, defect
+
+    # In elastic energy coordinates the elastic tangent is the identity.
+    # Plastic flow is non-associated, so the current tangent can be nonsymmetric.
+    modulus = returned['stress_tangent']@work.c
+    volume_basis = (work.value, work.dx, work.dy)
+    def action(vector):
+        v = work.c.new_tensor(vector).reshape(-1, 1)
+        delta = torch.linalg.solve_triangular(work.factor.T, v, upper=True).reshape(-1, 2)
+        strain = work.strain(delta, volume_basis)
+        stress = (modulus@strain.unsqueeze(-1)).squeeze(-1)
+        force = work.kext@delta.flatten()+work.stress_load(stress)
+        result = torch.linalg.solve_triangular(work.factor, force[:, None], upper=False)
+        return result.flatten().cpu().numpy()
+
+    size = residual.numel()
+    operator = LinearOperator((size, size), matvec=action, dtype=np.float64)
+    # A single Krylov cycle proposes a direction; the nonlinear Galerkin
+    # solve below determines its amplitude with the original return law.
+    direction, info = gmres(operator, -residual.cpu().numpy(), restart=20, maxiter=1,
+                            rtol=.1, atol=0.)
+    if info < 0:
+        raise RuntimeError('Current-increment tangent solve broke down.')
+    z = work.c.new_tensor(direction)
+    energy = work.factor.T@basis
+    outside = z-energy@(energy.T@z)
+    if outside.norm() <= torch.finfo(z.dtype).eps*z.norm()*size:
+        return basis, defect
+    mode = torch.linalg.solve_triangular(work.factor.T, (outside/outside.norm())[:, None], upper=True)
+    return torch.cat((basis, mode), dim=1), defect
+
+
 class ReducedIncrement:
     """Galerkin balance with unchanged material history and quadrature."""
     def __init__(self, work, basis, prefix, previous_plastic, release):

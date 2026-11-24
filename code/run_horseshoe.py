@@ -73,6 +73,45 @@ def write_results(output, work, coefficients, releases, *, prefix_cache=None, ev
     return rows
 
 
+@torch.no_grad()
+def polish_gauge_work(current, work, prefix, plastic, release, gauge_rows, target_mm):
+    """Correct the actual neural output weights at a stationary increment."""
+    from oespinn.neural_reduction import hidden_coefficients, vector_features
+
+    residual, tangent, _ = work.residual_tangent(current.coefficients(), prefix, plastic, release)
+    features = vector_features(hidden_coefficients(current))*current.amplitude/current.total_steps
+    head_jacobian = tangent@features
+    left, singular, right = torch.linalg.svd(head_jacobian, full_matrices=False)
+    keep = singular > singular[0]*torch.finfo(singular.dtype).eps*max(head_jacobian.shape)
+    left = left[:, keep]
+    gauge_work = gauge_rows@residual
+    gauge_tangent = gauge_rows@left
+    # Minimize the linearized full weak residual subject to zero work in
+    # the measured directions. The vertical gauge is a sum of two gauges.
+    change = -left.T@residual
+    change -= torch.linalg.pinv(gauge_tangent)@(gauge_work+gauge_tangent@change)
+    head_change = (right[keep].T@(change/singular[keep])).reshape(-1, 2).T
+    weight = current.kinematic_head.weight
+    old = weight.detach().clone()
+    gauge_max = float(gauge_work.abs().max())
+    scale = residual.norm()/target_mm
+    merit = residual.square().sum()+(scale*gauge_work).square().sum()
+    for trial in range(16):
+        weight.copy_(old+(.5**trial)*head_change)
+        try:
+            value, _ = work.residual_state(current.coefficients(), prefix, plastic, release)
+        except FloatingPointError:
+            continue
+        new_work = gauge_rows@value
+        new_merit = value.square().sum()+(scale*new_work).square().sum()
+        if new_merit < merit and float(new_work.abs().max()) <= max(gauge_max, target_mm):
+            return trial+2
+    weight.copy_(old)
+    if gauge_max > target_mm:
+        raise RuntimeError(f"Neural output update stalled at release {release} with gauge work {gauge_max:.6g} mm.")
+    return 17
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", required=True)
@@ -87,9 +126,13 @@ def main():
                         help="Stop inner optimization on gauge residual work, retaining the full residual for assessment")
     parser.add_argument("--response-relative-tolerance", type=float, default=0.,
                         help="Relative stability tolerance added to the configured absolute response tolerance")
+    parser.add_argument("--polish-stalled-gauges", action="store_true",
+                        help="Balance measured gauge work in the neural output layer when the movements stabilize first.")
     parser.add_argument("--initialize-from", help="Use corresponding neural states as predictors; replay and retrain every increment")
     parser.add_argument("--assess", action="store_true")
     args = parser.parse_args()
+    if args.polish_stalled_gauges and (args.equilibrium_tolerance_mm is None or args.equilibrium_tolerance_mm <= 0.):
+        parser.error("--polish-stalled-gauges needs a positive --equilibrium-tolerance-mm")
     torch.set_default_dtype(torch.float64)
     torch.set_num_threads(4)
     torch.manual_seed(1729)
@@ -98,6 +141,11 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
     geometry, work = make_work(settings, args.device)
+    if args.polish_stalled_gauges:
+        loads = torch.stack(list(work.gauges().values()), dim=1)
+        displacement_scale = C.SIGMA_REF*geometry.length_scale/C.E_REF*1000
+        gauge_rows = (torch.linalg.solve_triangular(work.factor, loads, upper=False).T
+                      *work.load_norm*displacement_scale)
     print(json.dumps({"event": "assembled", "seconds": time.perf_counter()-started,
                       "degrees_of_freedom": work.n*2, "area_m2": float(work.area)*geometry.length_scale**2}), flush=True)
     saved = torch.load(output/"model.pt", map_location=args.device, weights_only=False) if (output/"model.pt").exists() else None
@@ -175,7 +223,16 @@ def main():
                 loss.backward()
                 evaluations += 1
                 return loss
-            if args.optimizer == "lbfgs":
+            last = trajectory[-1] if trajectory and trajectory[-1]["step"] == step else None
+            polish = False
+            if args.polish_stalled_gauges and last:
+                stable = last["response_scaled_change"] is not None and last["response_scaled_change"] < 1.
+                unbalanced = max(abs(last[name+"_imbalance_mm"]) for name in work.gauges()) >= args.equilibrium_tolerance_mm
+                polish = last.get("head_polish", False) or (stable and unbalanced)
+            if polish:
+                evaluations = polish_gauge_work(current, work, prefix, previous_plastic, releases[-1],
+                                                gauge_rows, args.equilibrium_tolerance_mm)
+            elif args.optimizer == "lbfgs":
                 optimizer.step(closure)
             else:
                 from oespinn.orientation_tangent import NeuralCoordinates, linear_operator, column_scale, trust_region
@@ -230,6 +287,8 @@ def main():
             record["equilibrium_tolerance_mm"] = args.equilibrium_tolerance_mm
             record["response_relative_tolerance"] = args.response_relative_tolerance
             record["response_scaled_change"] = scaled_change
+            if args.polish_stalled_gauges:
+                record["head_polish"] = polish
             trajectory.append(record)
             previous_response = response
             accurate = rows[-1]["weak_relative"] < settings["training"]["weak_relative"]

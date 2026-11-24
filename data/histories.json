@@ -64,5 +64,95 @@
     "steps": 24,
     "radial_order": 12,
     "angular_modes": 24
+  },
+  "early_forecast": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "current_enrichment": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "width_control": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "cold_direct_coarse": {
+    "config": "configs/coarse.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "timed_full_network": {
+    "config": "configs/refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
+  },
+  "interface4": {
+    "config": "configs/interface4.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "ratio125": {
+    "config": "configs/ratio125.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "ratio175": {
+    "config": "configs/ratio175.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "cohesion008": {
+    "config": "configs/cohesion008.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "cohesion012": {
+    "config": "configs/cohesion012.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "friction22": {
+    "config": "configs/friction22.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "friction28": {
+    "config": "configs/friction28.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "pressure056": {
+    "config": "configs/pressure056.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "pressure084": {
+    "config": "configs/pressure084.json",
+    "steps": 12,
+    "radial_order": 12,
+    "angular_modes": 24
+  },
+  "friction22_refined": {
+    "config": "configs/friction22_refined.json",
+    "steps": 12,
+    "radial_order": 18,
+    "angular_modes": 36
   }
 }
